@@ -9,12 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
+        ZStack{
+        
         ScrollView{
             VStack{
-                Capsule()
-                    .padding()
-                    .frame(width: 400, height: 100, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/
-                    )
+                ConsoleView()
 
                 TrackView(title: "Track 1")
                 TrackView(title: "Track 2")
@@ -25,7 +24,16 @@ struct ContentView: View {
                 TrackView(title: "Track 7")
                 TrackView(title: "Track 8")
             }
+        }.padding(.top, 40)
+        
+        
+        
         }
+        .padding()
+        .background(Color.black.opacity(0.9))
+        .ignoresSafeArea()
+        
+        
     }
 }
 
@@ -39,9 +47,55 @@ struct TrackView: View {
     var title: String
     
     var body: some View {
-        Text(title)
-            .frame(width: 300, height:
-                    100, alignment: .center)
-            .padding()
+        
+        HStack {
+            CusttomButton(imageName: "smallcircle.fill.circle")
+            Text(title)
+                .frame(width: 200, height:
+                        UIScreen.screenHeight/12, alignment: .center)
+                .padding()
+                .foregroundColor(.blue)
+            CusttomButton(imageName: "trash")
+        }
+
+        .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(Color.blue, lineWidth: 1)
+                )
+        
+        
+        
+    }
+}
+
+struct CusttomButton: View {
+    var imageName: String
+    
+    var body: some View {
+        Spacer()
+        Button(action: {
+            print("Button tapped")
+        }) {
+            Image(systemName: imageName)
+        }
+        .frame(width: 20)
+        .padding()
+        .foregroundColor(.white)
+        .background(LinearGradient(gradient: Gradient(colors: [Color.red, Color.blue]), startPoint: .top, endPoint: .bottom))
+        .cornerRadius(30)
+        Spacer()
+    }
+}
+
+struct ConsoleView: View {
+    var body: some View {
+        HStack {
+            CusttomButton(imageName: "play.circle")
+            CusttomButton(imageName: "stop.circle")
+        }
+        .padding()
+        .background(Color.black)
+        .cornerRadius(30)
+        
     }
 }
