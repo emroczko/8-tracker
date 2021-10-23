@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		52271E7D272402D00012EF96 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7C272402D00012EF96 /* Recording.swift */; };
+		52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7E2724036F0012EF96 /* Date+Extension.swift */; };
+		5251DDA426EBDB22004BF9EA /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */; };
+		5280C3152720CE9B009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
+		5280C3162720D12F009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
+		5280C3172720D130009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
 		52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B3C68726E6E0E0001A33B1 /* MusicNotepadApp.swift */; };
 		52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B3C68926E6E0E0001A33B1 /* ContentView.swift */; };
 		52B3C68C26E6E0E2001A33B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52B3C68B26E6E0E2001A33B1 /* Assets.xcassets */; };
@@ -14,6 +20,12 @@
 		52B3C69A26E6E0E2001A33B1 /* MusicNotepadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B3C69926E6E0E2001A33B1 /* MusicNotepadTests.swift */; };
 		52B3C6A526E6E0E2001A33B1 /* MusicNotepadUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B3C6A426E6E0E2001A33B1 /* MusicNotepadUITests.swift */; };
 		52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */; };
+		52E3F32B2720DA020058E512 /* regularMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F3292720DA020058E512 /* regularMetronome.wav */; };
+		52E3F32C2720DA020058E512 /* regularMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F3292720DA020058E512 /* regularMetronome.wav */; };
+		52E3F32D2720DA020058E512 /* regularMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F3292720DA020058E512 /* regularMetronome.wav */; };
+		52E3F32E2720DA020058E512 /* accentMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F32A2720DA020058E512 /* accentMetronome.wav */; };
+		52E3F32F2720DA020058E512 /* accentMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F32A2720DA020058E512 /* accentMetronome.wav */; };
+		52E3F3302720DA020058E512 /* accentMetronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = 52E3F32A2720DA020058E512 /* accentMetronome.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +46,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		52271E7C272402D00012EF96 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
+		52271E7E2724036F0012EF96 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		5280C3142720CE9B009A2A3C /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		52B3C68426E6E0E0001A33B1 /* MusicNotepad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicNotepad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52B3C68726E6E0E0001A33B1 /* MusicNotepadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicNotepadApp.swift; sourceTree = "<group>"; };
 		52B3C68926E6E0E0001A33B1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -47,6 +63,8 @@
 		52B3C6A426E6E0E2001A33B1 /* MusicNotepadUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicNotepadUITests.swift; sourceTree = "<group>"; };
 		52B3C6A626E6E0E2001A33B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extension.swift"; sourceTree = "<group>"; };
+		52E3F3292720DA020058E512 /* regularMetronome.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = regularMetronome.wav; sourceTree = "<group>"; };
+		52E3F32A2720DA020058E512 /* accentMetronome.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = accentMetronome.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +92,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		52271E80272403790012EF96 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				52271E7E2724036F0012EF96 /* Date+Extension.swift */,
+				52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		52271E812724038A0012EF96 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				52271E7C272402D00012EF96 /* Recording.swift */,
+				5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */,
+				5280C3142720CE9B009A2A3C /* AudioPlayer.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		52271E82272403C00012EF96 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				52B3C68926E6E0E0001A33B1 /* ContentView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		52271E83272403CD0012EF96 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				52B3C68726E6E0E0001A33B1 /* MusicNotepadApp.swift */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		523E3750271E17EB009CF750 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				52E3F32A2720DA020058E512 /* accentMetronome.wav */,
+				52E3F3292720DA020058E512 /* regularMetronome.wav */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		52B3C67B26E6E0E0001A33B1 = {
 			isa = PBXGroup;
 			children = (
@@ -97,12 +159,14 @@
 		52B3C68626E6E0E0001A33B1 /* MusicNotepad */ = {
 			isa = PBXGroup;
 			children = (
-				52B3C68726E6E0E0001A33B1 /* MusicNotepadApp.swift */,
-				52B3C68926E6E0E0001A33B1 /* ContentView.swift */,
+				52271E83272403CD0012EF96 /* Other */,
+				52271E82272403C00012EF96 /* View */,
+				52271E812724038A0012EF96 /* Model */,
+				52271E80272403790012EF96 /* Extensions */,
+				523E3750271E17EB009CF750 /* Resources */,
 				52B3C68B26E6E0E2001A33B1 /* Assets.xcassets */,
 				52B3C69026E6E0E2001A33B1 /* Info.plist */,
 				52B3C68D26E6E0E2001A33B1 /* Preview Content */,
-				52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */,
 			);
 			path = MusicNotepad;
 			sourceTree = "<group>";
@@ -195,6 +259,9 @@
 		52B3C67C26E6E0E0001A33B1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					MetronomeSounds,
+				);
 				LastSwiftUpdateCheck = 1250;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
@@ -236,8 +303,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E3F32B2720DA020058E512 /* regularMetronome.wav in Resources */,
 				52B3C68F26E6E0E2001A33B1 /* Preview Assets.xcassets in Resources */,
 				52B3C68C26E6E0E2001A33B1 /* Assets.xcassets in Resources */,
+				52E3F32E2720DA020058E512 /* accentMetronome.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +314,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E3F32C2720DA020058E512 /* regularMetronome.wav in Resources */,
+				52E3F32F2720DA020058E512 /* accentMetronome.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +323,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E3F32D2720DA020058E512 /* regularMetronome.wav in Resources */,
+				52E3F3302720DA020058E512 /* accentMetronome.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,7 +337,11 @@
 			files = (
 				52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */,
 				52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */,
+				5251DDA426EBDB22004BF9EA /* AudioRecorder.swift in Sources */,
 				52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */,
+				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
+				52271E7D272402D00012EF96 /* Recording.swift in Sources */,
+				5280C3152720CE9B009A2A3C /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B3C69A26E6E0E2001A33B1 /* MusicNotepadTests.swift in Sources */,
+				5280C3162720D12F009A2A3C /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +359,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52B3C6A526E6E0E2001A33B1 /* MusicNotepadUITests.swift in Sources */,
+				5280C3172720D130009A2A3C /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
