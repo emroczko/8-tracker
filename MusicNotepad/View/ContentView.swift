@@ -9,13 +9,13 @@ import SwiftUI
 import AVKit
 
 
+let numberOfSamples: Int = 32
+
 
 
 struct ContentView: View {
     
 //    @ObservedObject var audioRecorder: AudioRecorder
-    @StateObject var applicationState = ApplicationState()
-    
     @State var trackFocus : [Int : Bool] = [1 : false,
                                             2 : false,
                                             3 : false,
@@ -24,7 +24,6 @@ struct ContentView: View {
                                             6 : false,
                                             7 : false,
                                             8 : false]
-    
     
     var body: some View {
         
@@ -42,41 +41,76 @@ struct ContentView: View {
                     TrackView(title: "Track 8", trackNumber: 8, trackFocus: $trackFocus)
                 }
             }.padding(.top, 40)
+            
         }
+        .animation(.linear(duration: 0.3))
         .padding()
         .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .top, endPoint: .bottom))
         .ignoresSafeArea()
     }
+    
 }
 
 struct TrackView: View {
     var title: String
     var trackNumber: Int
     @Binding var trackFocus : [Int : Bool]
-    @State var isExpanded: Bool = false
     @State var viewHeight: CGFloat = 120
     
     var body: some View {
-        
-        ExpandedTrackView(title: title, trackNumber: trackNumber, isExpanded: trackFocus[trackNumber] == true ? isExpanded : false)
-            .frame(height: trackFocus[trackNumber] == true ? 240 : 120 )
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(30)
-        .disabled(true)
-        .onTapGesture {
-            isExpanded = trackFocus[trackNumber] == true ? isExpanded : false
-            updateTrackFocus()
-            if (!isExpanded){
-                viewHeight = 240
-                isExpanded = true
+        Group{
+            if(trackFocus[trackNumber] == false){
+                CondensedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
             }
             else{
-                viewHeight = 120
-                isExpanded = false
+                ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
             }
         }
-        .animation(.linear(duration: 0.2))
+        .animation(.linear(duration: 0.3))
+        .frame(height: trackFocus[trackNumber] == true ? 360 : 120 )
+        .background(Color.black.opacity(0.75))
+        .cornerRadius(30)
+    
         
+    }
+    
+}
+
+struct ExpandedTrackView: View {
+    var title: String
+    var trackNumber: Int
+    @Binding var trackFocus : [Int : Bool]
+    @Binding var viewHeight: CGFloat
+    @State var progressValue: Float = 0.0
+    
+
+    var body: some View {
+                
+        VStack {
+            Spacer().frame(height:15)
+                .padding()
+            HStack {
+                CusttomButton(imageName: "smallcircle.fill.circle",
+                              function: doSth)
+                CusttomButton(imageName: "headphones", function: doSth)
+                CusttomButton(imageName: "trash", function: doSth)
+            }
+            Spacer()
+            HStack {
+                ForEach(1...numberOfSamples, id: \.self) { level in
+                        BarView(value: 100)
+                }
+            }
+            ProgressBar(value: $progressValue).frame(height: 15)
+            .padding()
+            Button(action: {
+                trackFocus = trackFocus.mapValues({ _ in false })
+                viewHeight = 120
+            }){
+                Image(systemName: "chevron.up")
+            }
+            .padding()
+        }
     }
     
     func updateTrackFocus(){
@@ -89,33 +123,68 @@ struct TrackView: View {
         }
     }
     
-}
-
-struct ExpandedTrackView: View {
-    var title: String
-    var trackNumber: Int
-    var isExpanded: Bool = false
-    
-    var body: some View {
-        Group{
-        HStack {
-            if(!isExpanded){
-                Text(title)
-                    .frame(width: UIScreen.screenWidth/5*4.25, height:
-                            UIScreen.screenHeight/12, alignment: .center)
-                    .padding()
-                    .foregroundColor(.blue)
-            }else{
-            CusttomButton(imageName: "smallcircle.fill.circle",
-                          function: doSth)
-            CusttomButton(imageName: "trash", function: doSth)
-            }
-        }
-        }
-    }
-    
     func doSth() -> Void {
         print("function")
+    }
+}
+
+struct CondensedTrackView: View {
+    var title: String
+    var trackNumber: Int
+    @Binding var trackFocus : [Int : Bool]
+    @Binding var viewHeight: CGFloat
+    
+    var body: some View {
+        VStack{
+            Spacer()
+            Text(title)
+                .frame(width: UIScreen.screenWidth/5*4.25, height:
+                        UIScreen.screenHeight/12, alignment: .center)
+                
+                .foregroundColor(.blue)
+            Button(action: {
+                trackFocus = trackFocus.mapValues({ _ in false })
+                trackFocus.updateValue(true, forKey: trackNumber)
+                viewHeight = 360
+            }){
+                Image(systemName: "chevron.down")
+            }
+        }
+        .padding()
+    }
+}
+
+struct BarView: View {
+
+    var value: CGFloat
+
+    var body: some View {
+        ZStack {
+
+            RoundedRectangle(cornerRadius: 20)
+                .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
+                                     startPoint: .top,
+                                     endPoint: .bottom))
+                .frame(width: (UIScreen.main.bounds.width - CGFloat(numberOfSamples) * 11) / CGFloat(numberOfSamples), height: value)
+        }
+    }
+}
+
+struct ProgressBar: View {
+    @Binding var value: Float
+    
+    var body: some View {
+        GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        Rectangle().frame(width: geometry.size.width , height: geometry.size.height)
+                            .opacity(0.3)
+                            .foregroundColor(Color(UIColor.systemTeal))
+                        
+                        Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width, geometry.size.width), height: geometry.size.height)
+                            .foregroundColor(Color(UIColor.systemBlue))
+                            .animation(.linear)
+                    }.cornerRadius(45.0)
+                }
     }
 }
 
@@ -210,5 +279,7 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
 
 
