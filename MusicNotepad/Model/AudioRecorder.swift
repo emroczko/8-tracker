@@ -18,7 +18,7 @@ class AudioRecorder: ObservableObject {
 
     @Published var recordingsList = [Recording]()
     
-    func startRecording(){
+    func startRecording(trackNumber: Int){
         
 
             let recordingSession = AVAudioSession.sharedInstance()
@@ -30,17 +30,17 @@ class AudioRecorder: ObservableObject {
             }
             
             let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let fileName = path.appendingPathComponent("CO-Voice : \(Date().toString(dateFormat: "dd-MM-YY 'at' HH:mm:ss")).m4a")
+            let fileName = path.appendingPathComponent("track" + String(trackNumber) + "_bachelor_app.m4a")
             
             
             
             let settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
+                AVSampleRateKey: 48000,
                 AVNumberOfChannelsKey: 1,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
-            
+            print("track" + String(trackNumber) + "_bachelor_app.m4a")
             
             do {
                 audioRecorder = try AVAudioRecorder(url: fileName, settings: settings)
@@ -55,6 +55,7 @@ class AudioRecorder: ObservableObject {
         
         
         func stopRecording(){
+            print("stop")
             audioRecorder.stop()
             isRecording = false
         }

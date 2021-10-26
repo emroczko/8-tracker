@@ -26,9 +26,24 @@ class AudioPlayer: ObservableObject {
         }
     }
     
-    init(url: URL){
+    init(){}
+    
+    func playSingleTrack(trackNumber: Int){
+        
+        let playSession = AVAudioSession.sharedInstance()
+                
+                do {
+                    try playSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+                } catch {
+                    print("Playing failed in Device")
+                }
+        
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf : url)
+            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = path.appendingPathComponent("track" + String(trackNumber) + "_bachelor_app.m4a")
+              
+            audioPlayer = try AVAudioPlayer(contentsOf : fileURL)
+            audioPlayer.volume = 100
             audioPlayer.prepareToPlay()
             audioPlayer.play()
                 

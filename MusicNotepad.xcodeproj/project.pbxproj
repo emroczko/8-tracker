@@ -10,6 +10,9 @@
 		52271E7D272402D00012EF96 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7C272402D00012EF96 /* Recording.swift */; };
 		52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7E2724036F0012EF96 /* Date+Extension.swift */; };
 		5251DDA426EBDB22004BF9EA /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */; };
+		526CD0412727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
+		526CD0422727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
+		526CD0432727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
 		5280C3152720CE9B009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
 		5280C3162720D12F009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
 		5280C3172720D130009A2A3C /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5280C3142720CE9B009A2A3C /* AudioPlayer.swift */; };
@@ -49,6 +52,7 @@
 		52271E7C272402D00012EF96 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
 		52271E7E2724036F0012EF96 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		526CD0402727602C006A1772 /* ApplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationState.swift; sourceTree = "<group>"; };
 		5280C3142720CE9B009A2A3C /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		52B3C68426E6E0E0001A33B1 /* MusicNotepad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicNotepad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52B3C68726E6E0E0001A33B1 /* MusicNotepadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicNotepadApp.swift; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 				52271E7C272402D00012EF96 /* Recording.swift */,
 				5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */,
 				5280C3142720CE9B009A2A3C /* AudioPlayer.swift */,
+				526CD0402727602C006A1772 /* ApplicationState.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -341,6 +346,7 @@
 				52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */,
 				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
 				52271E7D272402D00012EF96 /* Recording.swift in Sources */,
+				526CD0412727602C006A1772 /* ApplicationState.swift in Sources */,
 				5280C3152720CE9B009A2A3C /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,6 +355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				526CD0422727602C006A1772 /* ApplicationState.swift in Sources */,
 				52B3C69A26E6E0E2001A33B1 /* MusicNotepadTests.swift in Sources */,
 				5280C3162720D12F009A2A3C /* AudioPlayer.swift in Sources */,
 			);
@@ -358,6 +365,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				526CD0432727602C006A1772 /* ApplicationState.swift in Sources */,
 				52B3C6A526E6E0E2001A33B1 /* MusicNotepadUITests.swift in Sources */,
 				5280C3172720D130009A2A3C /* AudioPlayer.swift in Sources */,
 			);

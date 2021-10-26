@@ -15,7 +15,7 @@ let numberOfSamples: Int = 32
 
 struct ContentView: View {
     
-//    @ObservedObject var audioRecorder: AudioRecorder
+    @StateObject var applicationState: ApplicationState = ApplicationState()
     @State var trackFocus : [Int : Bool] = [1 : false,
                                             2 : false,
                                             3 : false,
@@ -47,6 +47,7 @@ struct ContentView: View {
         .padding()
         .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .top, endPoint: .bottom))
         .ignoresSafeArea()
+        .environmentObject(applicationState)
     }
     
 }
@@ -82,6 +83,9 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
+    @ObservedObject var audioRecorder: AudioRecorder = AudioRecorder()
+    var audioPlayer: AudioPlayer = AudioPlayer()
+    @EnvironmentObject var applicationState: ApplicationState
     
 
     var body: some View {
@@ -90,10 +94,21 @@ struct ExpandedTrackView: View {
             Spacer().frame(height:15)
                 .padding()
             HStack {
-                CusttomButton(imageName: "smallcircle.fill.circle",
-                              function: doSth)
-                CusttomButton(imageName: "headphones", function: doSth)
-                CusttomButton(imageName: "trash", function: doSth)
+                Group{
+                    if(audioRecorder.isRecording == false){
+                        CusttomButton(imageName: "smallcircle.fill.circle",
+                                      function: record)
+                    } else {
+                        CusttomButton(imageName: "stop.circle",
+                                      function: stopRecording)
+                    }
+                }
+                .disabled(applicationState.isPlaying)
+                Group{
+                    CusttomButton(imageName: "headphones", function: listenSingleRecording)
+                    CusttomButton(imageName: "trash", function: deleteRecording)
+                }
+                .disabled(applicationState.isRecording || applicationState.isPlaying)
             }
             Spacer()
             HStack {
@@ -123,8 +138,22 @@ struct ExpandedTrackView: View {
         }
     }
     
-    func doSth() -> Void {
-        print("function")
+    func record() {
+        print("record func")
+        self.audioRecorder.startRecording(trackNumber: self.trackNumber)
+    }
+    
+    func stopRecording() {
+        print("stop func")
+        self.audioRecorder.stopRecording()
+    }
+    
+    func listenSingleRecording() {
+        audioPlayer.playSingleTrack(trackNumber: self.trackNumber)
+    }
+    
+    func deleteRecording() {
+        
     }
 }
 
@@ -133,6 +162,7 @@ struct CondensedTrackView: View {
     var trackNumber: Int
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
+    @EnvironmentObject var applicationState: ApplicationState
     
     var body: some View {
         VStack{
@@ -151,6 +181,7 @@ struct CondensedTrackView: View {
             }
         }
         .padding()
+        .disabled(applicationState.isRecording)
     }
 }
 
@@ -212,32 +243,45 @@ struct CusttomButton: View {
 
 struct ConsoleView: View {
     
+    @EnvironmentObject var applicationState: ApplicationState
     @ObservedObject var accentPlayer = AudioPlayer(name: "accentMetronome", type: "wav")
     @ObservedObject var regularPlayer = AudioPlayer(name: "regularMetronome", type: "wav")
 
     @State var timer: Timer? = nil
     
-    @State var isPlaying: Bool = false
     let visualTimer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
     @State var backgroundColor: Color = Color.black.opacity(0.75)
+    
+    @State var viewHeight: CGFloat = 100
      
     var body: some View {
-        HStack {
-            CusttomButton(imageName: "play.circle", function: startMetronome)
-                .disabled(isPlaying)
-            CusttomButton(imageName: "stop.circle", function: stopMetronome)
-                .disabled(!isPlaying)
+        VStack {
+            HStack {
+                CusttomButton(imageName: "play.circle", function: startMetronome)
+                    .disabled(applicationState.isPlaying)
+                
+                CusttomButton(imageName: "stop.circle", function: stopMetronome)
+                    .disabled(!applicationState.isPlaying)
+            }
+            Spacer()
+            Button(action: {
+                viewHeight = 300
+            }){
+                Image(systemName: "chevron.down")
+            }
         }
         .padding()
+        .frame(height: viewHeight)
         .background(backgroundColor)
         .cornerRadius(30)
+        .disabled(applicationState.isRecording)
         
     }
     
     func startMetronome() -> Void {
         var count: Int = 0
-        isPlaying = true
+        applicationState.isPlaying = true
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
             count += 1
             
@@ -254,14 +298,14 @@ struct ConsoleView: View {
             }
             if(count == 16){
                 timer.invalidate()
-                isPlaying = false
+                applicationState.isPlaying = false
             }
             
         }
     }
     
     func stopMetronome() -> Void {
-        isPlaying = false
+        applicationState.isPlaying = false
         timer?.invalidate()
     }
     
