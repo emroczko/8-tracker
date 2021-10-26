@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		52271E7D272402D00012EF96 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7C272402D00012EF96 /* Recording.swift */; };
 		52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7E2724036F0012EF96 /* Date+Extension.swift */; };
+		5237FB4927287E3400B1912C /* CustomButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5237FB4827287E3400B1912C /* CustomButtonView.swift */; };
 		5251DDA426EBDB22004BF9EA /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */; };
 		526CD0412727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
 		526CD0422727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
@@ -51,6 +52,7 @@
 /* Begin PBXFileReference section */
 		52271E7C272402D00012EF96 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
 		52271E7E2724036F0012EF96 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		5237FB4827287E3400B1912C /* CustomButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonView.swift; sourceTree = "<group>"; };
 		5251DDA326EBDB22004BF9EA /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		526CD0402727602C006A1772 /* ApplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationState.swift; sourceTree = "<group>"; };
 		5280C3142720CE9B009A2A3C /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				52B3C68926E6E0E0001A33B1 /* ContentView.swift */,
+				5237FB4827287E3400B1912C /* CustomButtonView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -343,6 +346,7 @@
 				52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */,
 				52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */,
 				5251DDA426EBDB22004BF9EA /* AudioRecorder.swift in Sources */,
+				5237FB4927287E3400B1912C /* CustomButtonView.swift in Sources */,
 				52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */,
 				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
 				52271E7D272402D00012EF96 /* Recording.swift in Sources */,

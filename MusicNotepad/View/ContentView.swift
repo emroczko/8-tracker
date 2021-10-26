@@ -31,14 +31,10 @@ struct ContentView: View {
             ScrollView{
                 VStack{
                     ConsoleView()
-                    TrackView(title: "Track 1", trackNumber: 1, trackFocus: $trackFocus)
-                    TrackView(title: "Track 2", trackNumber: 2, trackFocus: $trackFocus)
-                    TrackView(title: "Track 3", trackNumber: 3, trackFocus: $trackFocus)
-                    TrackView(title: "Track 4", trackNumber: 4, trackFocus: $trackFocus)
-                    TrackView(title: "Track 5", trackNumber: 5, trackFocus: $trackFocus)
-                    TrackView(title: "Track 6", trackNumber: 6, trackFocus: $trackFocus)
-                    TrackView(title: "Track 7", trackNumber: 7, trackFocus: $trackFocus)
-                    TrackView(title: "Track 8", trackNumber: 8, trackFocus: $trackFocus)
+                    ForEach(1...8, id: \.self) {
+                        trackNumber in
+                        TrackView(title: "Track " + String(trackNumber), trackNumber: trackNumber, trackFocus: $trackFocus)
+                    }
                 }
             }.padding(.top, 40)
             
@@ -84,8 +80,8 @@ struct ExpandedTrackView: View {
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
     @ObservedObject var audioRecorder: AudioRecorder = AudioRecorder()
-    var audioPlayer: AudioPlayer = AudioPlayer()
     @EnvironmentObject var applicationState: ApplicationState
+    var timeProgress: Float = 0
     
 
     var body: some View {
@@ -96,17 +92,17 @@ struct ExpandedTrackView: View {
             HStack {
                 Group{
                     if(audioRecorder.isRecording == false){
-                        CusttomButton(imageName: "smallcircle.fill.circle",
+                        CustomButtonView(imageName: "smallcircle.fill.circle",
                                       function: record)
                     } else {
-                        CusttomButton(imageName: "stop.circle",
+                        CustomButtonView(imageName: "stop.circle",
                                       function: stopRecording)
                     }
                 }
                 .disabled(applicationState.isPlaying)
                 Group{
-                    CusttomButton(imageName: "headphones", function: listenSingleRecording)
-                    CusttomButton(imageName: "trash", function: deleteRecording)
+                    CustomButtonView(imageName: "headphones", function: listenSingleRecording)
+                    CustomButtonView(imageName: "trash", function: deleteRecording)
                 }
                 .disabled(applicationState.isRecording || applicationState.isPlaying)
             }
@@ -140,7 +136,7 @@ struct ExpandedTrackView: View {
     
     func record() {
         print("record func")
-        self.audioRecorder.startRecording(trackNumber: self.trackNumber)
+        self.audioRecorder.startRecording(trackNumber: self.trackNumber, tempo: 120)
     }
     
     func stopRecording() {
@@ -149,11 +145,11 @@ struct ExpandedTrackView: View {
     }
     
     func listenSingleRecording() {
-        audioPlayer.playSingleTrack(trackNumber: self.trackNumber)
+        AudioPlayer.sharedInstance.playTrack(trackNumber: self.trackNumber)
     }
     
     func deleteRecording() {
-        
+        self.audioRecorder.deleteRecording(trackNumber: trackNumber)
     }
 }
 
@@ -219,56 +215,49 @@ struct ProgressBar: View {
     }
 }
 
-struct CusttomButton: View {
-    var imageName: String
-    var trackNumber: Int?
-    var function: () -> Void
-    
-    var body: some View {
-        Spacer()
-        Button(action: {
-            function()
-        }) {
-            Image(systemName: imageName)
-        }
-        .frame(width: 20)
-        .padding()
-        .foregroundColor(.white)
-        .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .top, endPoint: .bottom))
-        .opacity(0.9)
-        .cornerRadius(30)
-        Spacer()
-    }
-}
-
 struct ConsoleView: View {
     
     @EnvironmentObject var applicationState: ApplicationState
-    @ObservedObject var accentPlayer = AudioPlayer(name: "accentMetronome", type: "wav")
-    @ObservedObject var regularPlayer = AudioPlayer(name: "regularMetronome", type: "wav")
-
-    @State var timer: Timer? = nil
-    
-    let visualTimer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
-
     @State var backgroundColor: Color = Color.black.opacity(0.75)
-    
     @State var viewHeight: CGFloat = 100
+    @State var nextTick: DispatchTime = DispatchTime.distantFuture
+    @State var count: Int = 0
+    @State var isExpanded: Bool = false
+    
+    @State var timer: Timer!
+    
+    var onTick: ((_ nextTick: DispatchTime) -> Void)?
      
     var body: some View {
         VStack {
             HStack {
-                CusttomButton(imageName: "play.circle", function: startMetronome)
+                CustomButtonView(imageName: "play.circle", function: start)
                     .disabled(applicationState.isPlaying)
                 
-                CusttomButton(imageName: "stop.circle", function: stopMetronome)
+                CustomButtonView(imageName: "stop.circle", function: stop)
                     .disabled(!applicationState.isPlaying)
             }
-            Spacer()
-            Button(action: {
-                viewHeight = 300
-            }){
-                Image(systemName: "chevron.down")
+            
+            if (isExpanded == false) {
+                Spacer()
+                Button(action: {
+                    viewHeight = 300
+                    isExpanded = true
+                }){
+                    Image(systemName: "chevron.down")
+            }
+            } else {
+                Spacer()
+//                Toggle("Metronome", isOn: $isExpanded)
+//                    .toggleStyle(.button)
+//                    .tint(.mint)
+                Spacer()
+                Button(action: {
+                    viewHeight = 100
+                    isExpanded = false
+                }){
+                    Image(systemName: "chevron.up")
+            }
             }
         }
         .padding()
@@ -279,34 +268,55 @@ struct ConsoleView: View {
         
     }
     
-    func startMetronome() -> Void {
-        var count: Int = 0
+    private func start() {
         applicationState.isPlaying = true
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            count += 1
-            
-            if(count % 4 == 1){
-                visualMetronome(color: Color.pink
-                                    .opacity(0.75))
-                accentPlayer.play()
-            }
-            else{
-                visualMetronome(color: Color.blue
-                                    .opacity(0.75))
-                regularPlayer.play()
+        nextTick = DispatchTime.now()
+        AudioPlayer.sharedInstance.prepareMetronome()
+        nextTick = DispatchTime.now()
+        tick()
+    }
 
-            }
-            if(count == 16){
-                timer.invalidate()
-                applicationState.isPlaying = false
-            }
-            
-        }
+    private func stop() {
+        applicationState.isPlaying = false
+        count = 0
+        AudioPlayer.sharedInstance.stopTracks()
+        print("Stoping metronome")
     }
     
-    func stopMetronome() -> Void {
-        applicationState.isPlaying = false
-        timer?.invalidate()
+    private func tick() {
+        guard
+            applicationState.isPlaying,
+            nextTick <= DispatchTime.now()
+            else { return }
+
+        let interval: TimeInterval = 60.0 / TimeInterval(120)
+        self.nextTick = self.nextTick + interval
+        DispatchQueue.main.asyncAfter(deadline: nextTick) {
+            self.tick()
+        }
+        count += 1
+        if(count == 1){
+            DispatchQueue.main.async {
+                AudioPlayer.sharedInstance.playTracks()
+            }
+        }
+        
+        if(count % 4 == 1){
+            visualMetronome(color: Color.pink
+                                .opacity(0.75))
+            AudioPlayer.sharedInstance.playAccentMetronome(interval: interval)
+        }
+        else{
+            visualMetronome(color: Color.blue
+                                .opacity(0.75))
+            AudioPlayer.sharedInstance.playRegularMetronome(interval: interval)
+
+        }
+        if(count == 16){
+            applicationState.isPlaying = false
+            count = 0
+        }
+        onTick?(nextTick)
     }
     
     func visualMetronome(color : Color){

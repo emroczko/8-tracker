@@ -8,55 +8,95 @@
 import Foundation
 import AVFoundation
 
-class AudioPlayer: ObservableObject {
+class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
-    private var audioPlayer = AVAudioPlayer()
+    static let sharedInstance = AudioPlayer()
     
-    init(name: String, type: String){
-        if let url = Bundle.main.url(forResource: name, withExtension: type) {
-            print("succes audio \(name)")
+    var players = [URL:AVAudioPlayer]()
+    var duplicatePlayers = [AVAudioPlayer]()
+    var accentPlayer: AVAudioPlayer!
+    var regularPlayer: AVAudioPlayer!
+    
+    private override init() {
+        print("konstruktor")
+        let accentMetronomeFileURL = Bundle.main.url(forResource: "accentMetronome", withExtension: "wav")
+        accentPlayer = try! AVAudioPlayer(contentsOf: accentMetronomeFileURL!)
+        accentPlayer.volume = 100
+        let regularMetronomeFileURL = Bundle.main.url(forResource: "regularMetronome", withExtension: "wav")
+        regularPlayer = try! AVAudioPlayer(contentsOf: regularMetronomeFileURL!)
+        regularPlayer.volume = 100
+        
+    }
+    
+    func prepareMetronome(){
+        accentPlayer.prepareToPlay()
+        regularPlayer.prepareToPlay()
+    }
+    
+    func playAccentMetronome(interval: TimeInterval){
+        print("accent")
+        accentPlayer.play()
+    }
+    
+    func playRegularMetronome(interval: TimeInterval){
+        print("regular")
+        regularPlayer.play()
+    }
+    
+    func playTrack(trackNumber: Int){
+
+        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL = path.appendingPathComponent("track\(trackNumber)_bachelor_app.m4a")
+        
+        guard FileManager.default.fileExists(atPath: fileURL.path)
+        else { return }
+
+        if let player = players[fileURL] {
+
+            if player.isPlaying == false {
+                player.prepareToPlay()
+                player.volume = 100
+                player.play()
+            }
+            else {
+
+                let duplicatePlayer = try! AVAudioPlayer(contentsOf: fileURL)
+                duplicatePlayer.delegate = self
+                duplicatePlayers.append(duplicatePlayer)
+                duplicatePlayer.prepareToPlay()
+                duplicatePlayer.volume = 100
+                duplicatePlayer.play()
+
+            }
+        } else {
             do{
-                audioPlayer = try AVAudioPlayer(contentsOf: url)
-                audioPlayer.prepareToPlay()
-                
-            }
-            catch{
-                print("error getting audio")
+                let player = try AVAudioPlayer(contentsOf: fileURL)
+                players[fileURL] = player
+                player.prepareToPlay()
+                player.volume = 100
+                player.play()
+            } catch {
+                print("Could not play sound file!")
             }
         }
     }
     
-    init(){}
-    
-    func playSingleTrack(trackNumber: Int){
-        
-        let playSession = AVAudioSession.sharedInstance()
-                
-                do {
-                    try playSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-                } catch {
-                    print("Playing failed in Device")
-                }
-        
-        do {
-            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let fileURL = path.appendingPathComponent("track" + String(trackNumber) + "_bachelor_app.m4a")
-              
-            audioPlayer = try AVAudioPlayer(contentsOf : fileURL)
-            audioPlayer.volume = 100
-            audioPlayer.prepareToPlay()
-            audioPlayer.play()
-                
-        } catch {
-            print("Playing Failed")
+    func playTracks(){
+        for trackNumber in 1...8 {
+            playTrack(trackNumber: trackNumber)
         }
     }
     
-    func play(){
-        audioPlayer.play()
+    func stopTracks(){
+        players.removeAll()
+        for player in duplicatePlayers {
+            player.stop()
+        }
     }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        duplicatePlayers.remove(at: (duplicatePlayers.firstIndex(of: player)!))
+    }
+
     
-    func stop(){
-        audioPlayer.stop()
-    }
 }
