@@ -116,6 +116,8 @@ class AudioManager: ObservableObject {
         
         try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord)
         
+        try! AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+        
         let _ = sequencer.addTrack(for: shaker)
         
         AVAudioSession.sharedInstance().requestRecordPermission{_ in }
