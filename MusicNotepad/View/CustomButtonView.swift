@@ -11,6 +11,7 @@ struct CustomButtonView: View {
     var imageName: String
     var trackNumber: Int?
     var function: () -> Void
+    var color: Color
     
     var body: some View {
         Spacer()
@@ -21,7 +22,7 @@ struct CustomButtonView: View {
         }
         .frame(width: 20)
         .padding()
-        .foregroundColor(.white)
+        .foregroundColor(color)
         .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .top, endPoint: .bottom))
         .opacity(0.9)
         .cornerRadius(30)
@@ -31,6 +32,6 @@ struct CustomButtonView: View {
 
 struct CustomButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        CustomButtonView(imageName: "circle.fill", function: {})
+        CustomButtonView(imageName: "circle.fill", function: {}, color: Color.white)
     }
 }

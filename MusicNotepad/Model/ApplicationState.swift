@@ -9,6 +9,8 @@ import Foundation
 
 
 class ApplicationState : ObservableObject{
+    static let shared = ApplicationState()
+    
     @Published var isRecording: Bool = false
     @Published var isPlaying: Bool = false
 }

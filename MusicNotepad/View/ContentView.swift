@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import AudioKit
 
 
 let numberOfSamples: Int = 32
@@ -15,7 +16,9 @@ let numberOfSamples: Int = 32
 
 struct ContentView: View {
     
-    @StateObject var applicationState: ApplicationState = ApplicationState()
+    @StateObject var applicationState = ApplicationState.shared
+    @StateObject var player = AudioManager()
+    
     @State var trackFocus : [Int : Bool] = [1 : false,
                                             2 : false,
                                             3 : false,
@@ -28,22 +31,31 @@ struct ContentView: View {
     var body: some View {
         
         ZStack{
-            ScrollView{
-                VStack{
-                    ConsoleView()
-                    ForEach(1...8, id: \.self) {
-                        trackNumber in
-                        TrackView(title: "Track " + String(trackNumber), trackNumber: trackNumber, trackFocus: $trackFocus)
+            VStack{
+                ConsoleView()
+                ScrollView{
+                    VStack{
+                        
+                        ForEach(1...8, id: \.self) {
+                            trackNumber in
+                            TrackView(title: "Track " + String(trackNumber), trackNumber: trackNumber, trackFocus: $trackFocus)
+                        }
                     }
                 }
             }.padding(.top, 40)
-            
         }
         .animation(.linear(duration: 0.3))
         .padding()
         .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.blue]), startPoint: .top, endPoint: .bottom))
         .ignoresSafeArea()
         .environmentObject(applicationState)
+        .environmentObject(player)
+        .onAppear {
+            self.player.start()
+        }
+        .onDisappear {
+            self.player.stop()
+        }
     }
     
 }
@@ -53,7 +65,7 @@ struct TrackView: View {
     var trackNumber: Int
     @Binding var trackFocus : [Int : Bool]
     @State var viewHeight: CGFloat = 120
-    
+
     var body: some View {
         Group{
             if(trackFocus[trackNumber] == false){
@@ -64,11 +76,9 @@ struct TrackView: View {
             }
         }
         .animation(.linear(duration: 0.3))
-        .frame(height: trackFocus[trackNumber] == true ? 360 : 120 )
+        .frame(height: trackFocus[trackNumber] == true ? 0.36*UIScreen.screenHeight : 120)
         .background(Color.black.opacity(0.75))
         .cornerRadius(30)
-    
-        
     }
     
 }
@@ -79,49 +89,87 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
-    @ObservedObject var audioRecorder: AudioRecorder = AudioRecorder()
+    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
+    @EnvironmentObject var player: AudioManager
+    @State var isInstrumentSettingsExpanded: Bool = false
+    
+    
     @EnvironmentObject var applicationState: ApplicationState
     var timeProgress: Float = 0
-    
 
+    
     var body: some View {
-                
-        VStack {
-            Spacer().frame(height:15)
-                .padding()
-            HStack {
-                Group{
-                    if(audioRecorder.isRecording == false){
-                        CustomButtonView(imageName: "smallcircle.fill.circle",
-                                      function: record)
-                    } else {
-                        CustomButtonView(imageName: "stop.circle",
-                                      function: stopRecording)
+        
+        VStack{
+        TabView {
+            VStack {
+                HStack {
+                    Group{
+                        if($player.data.isRecording.returnValue() == false){
+                            CustomButtonView(imageName: "smallcircle.fill.circle",
+                                          function: record, color: .red)
+                        } else {
+                            CustomButtonView(imageName: "stop.circle",
+                                          function: stopRecording, color: .white)
+                        }
                     }
+                    .disabled(applicationState.isPlaying)
+                    Group{
+                        if(!player.data.tracksMuted[trackNumber]!){
+                        CustomButtonView(imageName: "speaker.fill", function: muteTrack, color: .white)
+                        }
+                            else{
+                            CustomButtonView(imageName: "speaker.slash.fill", function: muteTrack, color: .blue)
+                        }
+                        if(player.data.soloTrack == trackNumber){
+                            CustomButtonView(imageName: "headphones", function: unSoloTrack, color: .yellow)
+                        }
+                        else{
+                            CustomButtonView(imageName: "headphones", function: soloTrack, color: .white)
+                        }
+                        
+                        CustomButtonView(imageName: "trash", function: deleteRecording, color: .gray)
+                    }
+                    .disabled(applicationState.isRecording || applicationState.isPlaying)
                 }
-                .disabled(applicationState.isPlaying)
-                Group{
-                    CustomButtonView(imageName: "headphones", function: listenSingleRecording)
-                    CustomButtonView(imageName: "trash", function: deleteRecording)
-                }
-                .disabled(applicationState.isRecording || applicationState.isPlaying)
+                
+                ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo).frame(height: 15)
+                    .padding()
+
+                DarkButtonView(title: "Convert to MIDI")
+                
+                
+                
             }
-            Spacer()
-            HStack {
-                ForEach(1...numberOfSamples, id: \.self) { level in
-                        BarView(value: 100)
-                }
+            .tabItem{
+                
             }
-            ProgressBar(value: $progressValue).frame(height: 15)
-            .padding()
+            
+            InstrumentSettings()
+                .tabItem {
+                    
+                }
+        }
+        .tabViewStyle(PageTabViewStyle())
+            
+            
             Button(action: {
                 trackFocus = trackFocus.mapValues({ _ in false })
-                viewHeight = 120
+                viewHeight = 0.4*UIScreen.screenWidth
             }){
                 Image(systemName: "chevron.up")
             }
             .padding()
+            .disabled(applicationState.isRecording)
+            
         }
+
+        
+            
+            
+        
+         
+        
     }
     
     func updateTrackFocus(){
@@ -134,22 +182,38 @@ struct ExpandedTrackView: View {
         }
     }
     
+    func muteTrack(){
+        player.data.tracksMuted[trackNumber]?.toggle()
+    }
+    
     func record() {
-        print("record func")
-        self.audioRecorder.startRecording(trackNumber: self.trackNumber, tempo: 120)
+        print("rec func")
+        player.data.trackToRecord = trackNumber
+        player.data.isRecording = true
+        player.data.isPlaying = true
+        applicationState.isRecording = true
     }
     
     func stopRecording() {
-        print("stop func")
-        self.audioRecorder.stopRecording()
+        player.stopRecording()
+        player.stopTracks()
+        player.data.trackToRecord = 0
+        player.data.isPlaying = false
+        applicationState.isRecording = false
+        player.sequencer.rewind()
+        
     }
     
-    func listenSingleRecording() {
-        AudioPlayer.sharedInstance.playTrack(trackNumber: self.trackNumber)
+    func soloTrack() {
+        player.data.soloTrack = trackNumber
+    }
+    
+    func unSoloTrack(){
+        player.data.soloTrack = 0
     }
     
     func deleteRecording() {
-        self.audioRecorder.deleteRecording(trackNumber: trackNumber)
+        FilesManager.deleteRecording(trackNumber: trackNumber)
     }
 }
 
@@ -163,42 +227,36 @@ struct CondensedTrackView: View {
     var body: some View {
         VStack{
             Spacer()
-            Text(title)
-                .frame(width: UIScreen.screenWidth/5*4.25, height:
-                        UIScreen.screenHeight/12, alignment: .center)
-                
+            HStack {
+                Text(title)
+                    .frame(width: UIScreen.screenWidth/10*4.25, height:
+                            UIScreen.screenHeight/12, alignment: .center)
+                    
                 .foregroundColor(.blue)
+    
+                Text(FilesManager.getDurationOfAudioFile(trackNumber: trackNumber))
+                    .frame(width: UIScreen.screenWidth/10*4.25, height:
+                            UIScreen.screenHeight/12, alignment: .center)
+                    .foregroundColor(.blue)
+                
+            }
             Button(action: {
                 trackFocus = trackFocus.mapValues({ _ in false })
                 trackFocus.updateValue(true, forKey: trackNumber)
-                viewHeight = 360
+                viewHeight = 320
             }){
                 Image(systemName: "chevron.down")
             }
         }
         .padding()
+        .frame(maxWidth: .infinity)
         .disabled(applicationState.isRecording)
-    }
-}
-
-struct BarView: View {
-
-    var value: CGFloat
-
-    var body: some View {
-        ZStack {
-
-            RoundedRectangle(cornerRadius: 20)
-                .fill(LinearGradient(gradient: Gradient(colors: [.purple, .blue]),
-                                     startPoint: .top,
-                                     endPoint: .bottom))
-                .frame(width: (UIScreen.main.bounds.width - CGFloat(numberOfSamples) * 11) / CGFloat(numberOfSamples), height: value)
-        }
     }
 }
 
 struct ProgressBar: View {
     @Binding var value: Float
+    @Binding var tempo: Double
     
     var body: some View {
         GeometryReader { geometry in
@@ -207,9 +265,10 @@ struct ProgressBar: View {
                             .opacity(0.3)
                             .foregroundColor(Color(UIColor.systemTeal))
                         
-                        Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width, geometry.size.width), height: geometry.size.height)
+                        Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width/31, geometry.size.width), height: geometry.size.height)
                             .foregroundColor(Color(UIColor.systemBlue))
-                            .animation(.linear)
+                            .animation(
+                                .linear(duration: Double(60/tempo)))
                     }.cornerRadius(45.0)
                 }
     }
@@ -220,112 +279,118 @@ struct ConsoleView: View {
     @EnvironmentObject var applicationState: ApplicationState
     @State var backgroundColor: Color = Color.black.opacity(0.75)
     @State var viewHeight: CGFloat = 100
-    @State var nextTick: DispatchTime = DispatchTime.distantFuture
-    @State var count: Int = 0
     @State var isExpanded: Bool = false
     
-    @State var timer: Timer!
+    @EnvironmentObject var player: AudioManager
     
-    var onTick: ((_ nextTick: DispatchTime) -> Void)?
      
     var body: some View {
         VStack {
             HStack {
-                CustomButtonView(imageName: "play.circle", function: start)
-                    .disabled(applicationState.isPlaying)
+                CustomButtonView(imageName: "play.circle", function: start, color: applicationState.isPlaying ? .white : .green)
+                    .disabled($applicationState.isPlaying.returnValue() == true)
                 
-                CustomButtonView(imageName: "stop.circle", function: stop)
-                    .disabled(!applicationState.isPlaying)
+                CustomButtonView(imageName: "stop.circle", function: stop, color: applicationState.isPlaying ? .red : .white)
+                    .disabled($applicationState.isPlaying.returnValue() == false)
             }
             
             if (isExpanded == false) {
                 Spacer()
                 Button(action: {
-                    viewHeight = 300
+                    viewHeight = 328
                     isExpanded = true
                 }){
                     Image(systemName: "chevron.down")
             }
             } else {
                 Spacer()
-//                Toggle("Metronome", isOn: $isExpanded)
-//                    .toggleStyle(.button)
-//                    .tint(.mint)
-                Spacer()
+                    .frame(height: 10)
+                HStack{
+                    Button("Click", action: {
+                        player.data.isMetronomePlaying.toggle()
+                    })
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(Color.blue)
+                    .background(Color.black.opacity(player.data.isMetronomePlaying ? 0.5 : 0.2))
+                    .cornerRadius(30)
+                    .foregroundColor(Color.black.opacity(0.75))
+                    
+                    Button("Count in", action: {
+                        player.data.isCountIn.toggle()
+                    })
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(Color.blue)
+                    .background(Color.black.opacity(player.data.isCountIn ? 0.5 : 0.2))
+                    .cornerRadius(30)
+                    .foregroundColor(Color.black.opacity(0.75))
+                    .disabled(applicationState.isPlaying == true)
+                }
+                
+                Stepper(value: $player.data.tempo, in: 100...120) {
+                    Text("Tempo: \(player.data.tempo, specifier: "%.0f")")
+                }
+                .foregroundColor(Color.blue)
+                .padding()
+                .background(Color.black.opacity(0.5))
+                .cornerRadius(30)
+                Button("Loop", action: {
+                    player.data.isLooped.toggle()
+                })
+                .padding()
+                .frame(maxWidth: .infinity)
+                .foregroundColor(Color.blue)
+                .background(Color.black.opacity(player.data.isLooped ? 0.5 : 0.2))
+                .cornerRadius(30)
+                .foregroundColor(Color.black.opacity(0.75))
+ 
                 Button(action: {
                     viewHeight = 100
                     isExpanded = false
-                }){
+                })
+                {
                     Image(systemName: "chevron.up")
+                }
+                .padding()
             }
-            }
+                
         }
         .padding()
         .frame(height: viewHeight)
-        .background(backgroundColor)
+        .background(applicationState.isPlaying || applicationState.isRecording ? player.data.color : backgroundColor)
         .cornerRadius(30)
         .disabled(applicationState.isRecording)
         
     }
     
-    private func start() {
+    func start() {
+        player.data.isPlaying = true
         applicationState.isPlaying = true
-        nextTick = DispatchTime.now()
-        AudioPlayer.sharedInstance.prepareMetronome()
-        nextTick = DispatchTime.now()
-        tick()
-    }
-
-    private func stop() {
-        applicationState.isPlaying = false
-        count = 0
-        AudioPlayer.sharedInstance.stopTracks()
-        print("Stoping metronome")
-    }
-    
-    private func tick() {
-        guard
-            applicationState.isPlaying,
-            nextTick <= DispatchTime.now()
-            else { return }
-
-        let interval: TimeInterval = 60.0 / TimeInterval(120)
-        self.nextTick = self.nextTick + interval
-        DispatchQueue.main.asyncAfter(deadline: nextTick) {
-            self.tick()
-        }
-        count += 1
-        if(count == 1){
-            DispatchQueue.main.async {
-                AudioPlayer.sharedInstance.playTracks()
-            }
-        }
         
-        if(count % 4 == 1){
-            visualMetronome(color: Color.pink
-                                .opacity(0.75))
-            AudioPlayer.sharedInstance.playAccentMetronome(interval: interval)
-        }
-        else{
-            visualMetronome(color: Color.blue
-                                .opacity(0.75))
-            AudioPlayer.sharedInstance.playRegularMetronome(interval: interval)
-
-        }
-        if(count == 16){
-            applicationState.isPlaying = false
-            count = 0
-        }
-        onTick?(nextTick)
     }
     
-    func visualMetronome(color : Color){
-        backgroundColor = color
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            backgroundColor = Color.black.opacity(0.75)
-        }
+    func stop() {
+        player.stopTracks()
+        player.data.isPlaying = false
+        applicationState.isPlaying = false
+        player.sequencer.rewind()
     }
+}
     
+struct DarkButtonView: View {
+    @State var title: String
+    
+    var body: some View {
+        Button(title, action: {
+            
+        })
+            .padding()
+            .foregroundColor(Color.blue)
+            .background(Color.black.opacity(0.5))
+            .cornerRadius(30)
+            .foregroundColor(Color.black.opacity(0.75))
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -333,6 +398,8 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
 
 
 
