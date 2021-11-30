@@ -89,7 +89,7 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
-    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
+    @StateObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
     @EnvironmentObject var player: AudioManager
     @State var isInstrumentSettingsExpanded: Bool = false
     
@@ -136,40 +136,34 @@ struct ExpandedTrackView: View {
                 ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo).frame(height: 15)
                     .padding()
 
-                DarkButtonView(title: "Convert to MIDI")
-                
-                
-                
+                DarkButtonView(title: "Convert to MIDI", function: convertToMidi)
+
             }
             .tabItem{
                 
             }
             
             InstrumentSettings()
-                .tabItem {
-                    
-                }
+            .tabItem {
+                
+            }
         }
         .tabViewStyle(PageTabViewStyle())
             
-            
-            Button(action: {
-                trackFocus = trackFocus.mapValues({ _ in false })
-                viewHeight = 0.4*UIScreen.screenWidth
-            }){
-                Image(systemName: "chevron.up")
-            }
-            .padding()
-            .disabled(applicationState.isRecording)
-            
+        Button(action: {
+            trackFocus = trackFocus.mapValues({ _ in false })
+            viewHeight = 0.4*UIScreen.screenWidth
+        }){
+            Image(systemName: "chevron.up")
         }
-
-        
-            
-            
-        
-         
-        
+        .padding()
+        .disabled(applicationState.isRecording)
+        }
+    }
+    
+    func convertToMidi(){
+        print(trackNumber)
+        print(audioRecorder.pitchInformation.dataTable[trackNumber]!)
     }
     
     func updateTrackFocus(){
@@ -380,10 +374,11 @@ struct ConsoleView: View {
     
 struct DarkButtonView: View {
     @State var title: String
+    var function: () -> Void
     
     var body: some View {
         Button(title, action: {
-            
+            function()
         })
             .padding()
             .foregroundColor(Color.blue)

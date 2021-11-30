@@ -87,6 +87,14 @@ class AudioManager: ObservableObject {
                 }
             }
         }
+        else{
+            if(data.isCountIn && data.isRecording){
+                track.sequence.add(noteNumber: data.downbeatNoteNumber, position: Double(0), duration: 0.4)
+                track.sequence.add(noteNumber: data.beatNoteNumber, position: Double(1), duration: 0.1)
+                track.sequence.add(noteNumber: data.beatNoteNumber, position: Double(2), duration: 0.1)
+                track.sequence.add(noteNumber: data.beatNoteNumber, position: Double(3), duration: 0.1)
+            }
+        }
         
         track = sequencer.tracks[1]
         track.length = Double(length)
