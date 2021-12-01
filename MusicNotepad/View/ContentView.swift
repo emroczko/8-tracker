@@ -162,8 +162,7 @@ struct ExpandedTrackView: View {
     }
     
     func convertToMidi(){
-        print(trackNumber)
-        print(audioRecorder.pitchInformation.dataTable[trackNumber]!)
+        MidiConverter.sharedInstance.convertBufferToFloats(trackNumber: trackNumber)
     }
     
     func updateTrackFocus(){
