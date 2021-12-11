@@ -89,7 +89,7 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
-    @StateObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
+    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
     @EnvironmentObject var player: AudioManager
     @State var isInstrumentSettingsExpanded: Bool = false
     
@@ -162,7 +162,12 @@ struct ExpandedTrackView: View {
     }
     
     func convertToMidi(){
-        MidiConverter.sharedInstance.convertBufferToFloats(trackNumber: trackNumber)
+        let notes = MidiConverter.sharedInstance.convertBufferToFloats(trackNumber: trackNumber)
+        guard notes.count > 0 else {
+            return
+        }
+        player.addMidiToTrack(trackNumber: trackNumber, notes: notes)
+        player.isMIDI = true
     }
     
     func updateTrackFocus(){
@@ -206,7 +211,10 @@ struct ExpandedTrackView: View {
     }
     
     func deleteRecording() {
+        player.deleteTrackFromPlayers(trackNumber: trackNumber)
         FilesManager.deleteRecording(trackNumber: trackNumber)
+        player.isMIDI = false
+        player.midiNotes[trackNumber] = []
     }
 }
 

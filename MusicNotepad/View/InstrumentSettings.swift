@@ -11,11 +11,11 @@ struct InstrumentSettings: View {
     var body: some View {
             Picker(selection: .constant(1), label: Text("Picker"), content: {
                 
-                Text("Sine synth").tag(1)
+                Text("Phase disorted synth").tag(1)
                     .foregroundColor(.blue)
-                Text("Saw synth").tag(2)
+                Text("Waveform morphed synth").tag(2)
                     .foregroundColor(.blue)
-                Text("Electric Piano").tag(3)
+                Text("PWM synth").tag(3)
                     .foregroundColor(.blue)
                 
             })
