@@ -21,7 +21,7 @@ struct SoundInfo{
 
 class MidiConverter {
     
-    static var sharedInstance = MidiConverter()
+  //  static var sharedInstance = MidiConverter()
     
     private var pitch: [Float] = [0, 0]
     private var amp: [Float] = [0, 0]
@@ -83,9 +83,6 @@ class MidiConverter {
         lengthenNotes()
         
         print("finished completed notes: \(midiNotesCompleted.count)")
-        for sound in soundArray {
-           //print("Note: \(sound.pitch)   amplitude: \(sound.amplitude)")
-        }
         
         for note in midiNotes {
             print("Note : \(note.noteNumber)")

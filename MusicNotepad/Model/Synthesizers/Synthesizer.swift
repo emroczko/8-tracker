@@ -18,6 +18,7 @@ protocol Synthesizer {
     
     func play(frequency: AUValue)
     func stop(frequency: AUValue)
+    func stop()
     func fillSynthesizerWithOscillators()
     func changeAmplitude(value: AUValue)
     func changeUniqueModification(value: AUValue)
