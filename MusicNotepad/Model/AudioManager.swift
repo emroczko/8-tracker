@@ -45,6 +45,7 @@ struct TrackData {
     var isAudioEnabled : Bool = true
     var isMuted : Bool = false
     var isAudioRecorded : Bool = false
+    var audioVolume : AUValue = 75
 }
 
 class AudioManager: ObservableObject {
@@ -364,7 +365,7 @@ class AudioManager: ObservableObject {
         
         if let player = players[fileURL] {
             mixer.addInput(player)
-            player.volume = 80
+            player.volume = tracksData[trackNumber - 1].audioVolume
             player.play()
             
                 
@@ -372,7 +373,7 @@ class AudioManager: ObservableObject {
             let player = AudioPlayer(file: file)!
             mixer.addInput(player)
             players[fileURL] = player
-            player.volume = 80
+            player.volume = tracksData[trackNumber - 1].audioVolume
             player.play()
             
         }
