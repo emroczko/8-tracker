@@ -76,7 +76,7 @@ struct TrackView: View {
             }
         }
         .animation(.linear(duration: 0.3))
-        .frame(height: trackFocus[trackNumber] == true ? 0.36*UIScreen.screenHeight : 120)
+        .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
         .background(Color.black.opacity(0.75))
         .cornerRadius(30)
     }
@@ -137,6 +137,13 @@ struct ExpandedTrackView: View {
                 ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo)
                     .frame(height: 15)
                     .padding()
+                
+                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", bounds: 0.0 ... 100.0)
+                    .frame(height: 15)
+                    .padding()
+                
+                    
+
 
                 if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == true){
                     MidiControlsButtons(trackNumber: trackNumber)
@@ -146,7 +153,7 @@ struct ExpandedTrackView: View {
                 
             }
             
-            InstrumentSettings()
+            InstrumentSettings(trackNumber: trackNumber)
             .tabItem {
                 
             }
@@ -253,19 +260,20 @@ struct ProgressBar: View {
     
     var body: some View {
         GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        Rectangle().frame(width: geometry.size.width , height: geometry.size.height)
-                            .opacity(0.3)
-                            .foregroundColor(Color(UIColor.systemTeal))
-                        
-                        Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width/31, geometry.size.width), height: geometry.size.height)
-                            .foregroundColor(Color(UIColor.systemBlue))
-                            .animation(
-                                .linear(duration: Double(60/tempo)))
-                    }.cornerRadius(45.0)
-                }
+            ZStack(alignment: .leading) {
+                Rectangle().frame(width: geometry.size.width , height: geometry.size.height)
+                    .opacity(0.3)
+                    .foregroundColor(Color(UIColor.systemTeal))
+                
+                Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width/31, geometry.size.width), height: geometry.size.height)
+                    .foregroundColor(Color(UIColor.systemBlue))
+                    .animation(
+                        .linear(duration: Double(60/tempo)))
+            }.cornerRadius(45.0)
+        }
     }
 }
+
 
 struct ConsoleView: View {
     
@@ -276,7 +284,6 @@ struct ConsoleView: View {
     
     @EnvironmentObject var player: AudioManager
     
-     
     var body: some View {
         VStack {
             HStack {
