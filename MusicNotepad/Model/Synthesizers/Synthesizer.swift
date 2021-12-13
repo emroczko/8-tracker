@@ -24,5 +24,9 @@ protocol Synthesizer {
     func changeUniqueModification(value: AUValue)
 }
 
-
+enum SynthesizerType : String {
+    case PWMSynth = "PWM Synthesizer"
+    case PhaseDisortedSynth = "Phase disorted synth"
+    case WaveformMorphedSynth = "Waveform morphed synth"
+}
 

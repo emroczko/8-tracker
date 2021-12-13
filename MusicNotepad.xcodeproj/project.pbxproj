@@ -22,6 +22,8 @@
 		526CD0412727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
 		526CD0422727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
 		526CD0432727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
+		528AC19F2767CA8400F0270A /* WaveMorphedSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC19E2767CA8400F0270A /* WaveMorphedSynthesizer.swift */; };
+		528AC1A12767CE8000F0270A /* PhaseDisortedSynth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC1A02767CE8000F0270A /* PhaseDisortedSynth.swift */; };
 		528BD0FE2753B0070038F231 /* MidiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528BD0FD2753B0070038F231 /* MidiConverter.swift */; };
 		529176AF275517A900AFC0EA /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 529176AE275517A900AFC0EA /* AudioKit */; };
 		529176B2275517C500AFC0EA /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 529176B1275517C500AFC0EA /* SoundpipeAudioKit */; };
@@ -71,6 +73,8 @@
 		5251DDA326EBDB22004BF9EA /* CustomAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAudioRecorder.swift; sourceTree = "<group>"; };
 		5254979E2755056D00EDFAC2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		526CD0402727602C006A1772 /* ApplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationState.swift; sourceTree = "<group>"; };
+		528AC19E2767CA8400F0270A /* WaveMorphedSynthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveMorphedSynthesizer.swift; sourceTree = "<group>"; };
+		528AC1A02767CE8000F0270A /* PhaseDisortedSynth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseDisortedSynth.swift; sourceTree = "<group>"; };
 		528BD0FD2753B0070038F231 /* MidiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiConverter.swift; sourceTree = "<group>"; };
 		529805AE274950C7002F6158 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
 		52B3C68426E6E0E0001A33B1 /* MusicNotepad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicNotepad.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +130,8 @@
 			children = (
 				52135CCD2763E9F800E8D3F9 /* Synthesizer.swift */,
 				52135CD027640A5F00E8D3F9 /* PWMSynthesizer.swift */,
+				528AC19E2767CA8400F0270A /* WaveMorphedSynthesizer.swift */,
+				528AC1A02767CE8000F0270A /* PhaseDisortedSynth.swift */,
 			);
 			path = Synthesizers;
 			sourceTree = "<group>";
@@ -404,6 +410,7 @@
 				52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */,
 				52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */,
 				523D682D2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift in Sources */,
+				528AC1A12767CE8000F0270A /* PhaseDisortedSynth.swift in Sources */,
 				52B9119127512EC800905B6B /* UINavigationBar+Extension.swift in Sources */,
 				528BD0FE2753B0070038F231 /* MidiConverter.swift in Sources */,
 				52135CD127640A5F00E8D3F9 /* PWMSynthesizer.swift in Sources */,
@@ -414,6 +421,7 @@
 				52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */,
 				521A38122766DD100070FF70 /* CustomSlider.swift in Sources */,
 				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
+				528AC19F2767CA8400F0270A /* WaveMorphedSynthesizer.swift in Sources */,
 				521987E5275CEEFB0007542C /* MidiPlayer.swift in Sources */,
 				52271E7D272402D00012EF96 /* Recording.swift in Sources */,
 				526CD0412727602C006A1772 /* ApplicationState.swift in Sources */,
