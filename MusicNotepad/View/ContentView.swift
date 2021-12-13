@@ -86,6 +86,7 @@ struct TrackView: View {
 struct ExpandedTrackView: View {
     var title: String
     var trackNumber: Int
+    var midiConverter: MidiConverter = MidiConverter()
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
@@ -133,43 +134,34 @@ struct ExpandedTrackView: View {
                     .disabled(applicationState.isRecording || applicationState.isPlaying)
                 }
                 
-                ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo).frame(height: 15)
+                ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo)
+                    .frame(height: 15)
                     .padding()
 
-                DarkButtonView(title: "Convert to MIDI")
-                
-                
-                
+                if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == true){
+                    MidiControlsButtons(trackNumber: trackNumber)
+                }
             }
             .tabItem{
                 
             }
             
             InstrumentSettings()
-                .tabItem {
-                    
-                }
+            .tabItem {
+                
+            }
         }
         .tabViewStyle(PageTabViewStyle())
             
-            
-            Button(action: {
-                trackFocus = trackFocus.mapValues({ _ in false })
-                viewHeight = 0.4*UIScreen.screenWidth
-            }){
-                Image(systemName: "chevron.up")
-            }
-            .padding()
-            .disabled(applicationState.isRecording)
-            
+        Button(action: {
+            trackFocus = trackFocus.mapValues({ _ in false })
+            viewHeight = 0.4*UIScreen.screenWidth
+        }){
+            Image(systemName: "chevron.up")
         }
-
-        
-            
-            
-        
-         
-        
+        .padding()
+        .disabled(applicationState.isRecording)
+        }
     }
     
     func updateTrackFocus(){
@@ -187,7 +179,6 @@ struct ExpandedTrackView: View {
     }
     
     func record() {
-        print("rec func")
         player.data.trackToRecord = trackNumber
         player.data.isRecording = true
         player.data.isPlaying = true
@@ -213,9 +204,11 @@ struct ExpandedTrackView: View {
     }
     
     func deleteRecording() {
-        FilesManager.deleteRecording(trackNumber: trackNumber)
+        player.clearTrack(trackNumber: trackNumber)
     }
 }
+
+
 
 struct CondensedTrackView: View {
     var title: String
@@ -380,16 +373,61 @@ struct ConsoleView: View {
     
 struct DarkButtonView: View {
     @State var title: String
+    @Binding var isPressed : Bool
+    var function: () -> Void
     
     var body: some View {
         Button(title, action: {
-            
+            function()
         })
             .padding()
             .foregroundColor(Color.blue)
-            .background(Color.black.opacity(0.5))
+            .background(Color.black.opacity(isPressed ? 0.2 : 0.5))
             .cornerRadius(30)
             .foregroundColor(Color.black.opacity(0.75))
+    }
+}
+
+struct MidiControlsButtons: View {
+    var trackNumber: Int
+    @State var convertToMidiPressed : Bool = false
+    var midiConverter: MidiConverter = MidiConverter()
+    
+    @EnvironmentObject var player: AudioManager
+    
+    var body: some View {
+        
+        if (FilesManager.checkIfFileExists(trackNumber: trackNumber)) {
+            HStack{
+            DarkButtonView(title: "Audio", isPressed: $player.tracksData[trackNumber - 1].isAudioEnabled, function: enableAudio)
+            DarkButtonView(title: "MIDI", isPressed:  $player.tracksData[trackNumber - 1].isMidiEnabled,function: enableMidi)
+            }
+        }
+        
+    }
+    
+    func enableAudio(){
+        player.tracksData[trackNumber - 1].isAudioEnabled.toggle()
+    }
+    
+    func enableMidi(){
+        if(player.midiNotes[trackNumber]!.isEmpty){
+            convertToMidi()
+            print("converting")
+        }
+        player.tracksData[trackNumber - 1].isMidiEnabled.toggle()
+        if(player.tracksData[trackNumber - 1].isMidiEnabled == false){
+            player.sequencer.tracks[trackNumber + 3].clear()
+        }
+        
+    }
+    
+    func convertToMidi(){
+        let notes = midiConverter.convertBufferToFloats(trackNumber: trackNumber)
+        guard notes.count > 0 else {
+            return
+        }
+        player.addMidiToTrack(trackNumber: trackNumber, notes: notes)
     }
 }
 
@@ -398,9 +436,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-
-
-
-
-
