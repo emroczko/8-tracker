@@ -1,8 +1,8 @@
 //
-//  PWMSynthesizer.swift
+//  WaveMorphedSynthesizer.swift
 //  MusicNotepad
 //
-//  Created by Eryk Mroczko on 10/12/2021.
+//  Created by Eryk Mroczko on 13/12/2021.
 //
 
 import Foundation
@@ -12,23 +12,21 @@ import AudioKitEX
 import SoundpipeAudioKit
 
 
-class PWMSynthesizer : Synthesizer, Node {
-    
+class WaveMorphedSynthesizer : Synthesizer, Node {
     var connections: [Node] { [] }
-    var avAudioNode = instantiate(generator: "pwmo")
+    var avAudioNode = instantiate(generator: "morf")
     
     var amplitude: AUValue = 1
     var frequency: AUValue = 440
-    var uniqueModification: Float = 0.5 {
+    var uniqueModification: Float = 1.5 {
         didSet {
             changeUniqueModification(value: uniqueModification)
         }
     }
-    var oscillators: [PWMOscillator] = []
+    var oscillators: [MorphingOscillator] = []
     
     var voices: Int = 3 {
         didSet{
-
             clearOscillators()
             fillSynthesizerWithOscillators()
         }
@@ -44,7 +42,7 @@ class PWMSynthesizer : Synthesizer, Node {
     func fillSynthesizerWithOscillators(){
         clearOscillators()
         for _ in 1 ... voices {
-            oscillators.append(PWMOscillator())
+            oscillators.append(MorphingOscillator())
         }
     }
     
@@ -60,7 +58,7 @@ class PWMSynthesizer : Synthesizer, Node {
     
     func changeUniqueModification(value: AUValue) {
         for oscillator in oscillators {
-            oscillator.pulseWidth = value
+            oscillator.index = value
         }
     }
     
@@ -90,5 +88,5 @@ class PWMSynthesizer : Synthesizer, Node {
             oscillator.stop()
         }
     }
-    
+
 }

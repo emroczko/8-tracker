@@ -316,9 +316,14 @@ class AudioManager: ObservableObject {
         //mixer.addInput(fader2)
         mixer.addInput(callbackSynth)
         
-        
         for synth in synthesizers {
             if let current = synth as? PWMSynthesizer {
+                mixer.addInput(current.oscillators[0])
+            }
+            if let current = synth as? WaveMorphedSynthesizer {
+                mixer.addInput(current.oscillators[0])
+            }
+            if let current = synth as? PhaseDisortedSynthesizer {
                 mixer.addInput(current.oscillators[0])
             }
         }
@@ -327,10 +332,45 @@ class AudioManager: ObservableObject {
             mixer.addInput(callback)
         }
         
-        
-
         engine.output = mixer
 
+    }
+    
+    func changeSynthesizer(trackNumber: Int, newSynthesizer: SynthesizerType){
+        
+        print("in func")
+        if let current = synthesizers[trackNumber - 1] as? PWMSynthesizer {
+            mixer.removeInput(current.oscillators[0])
+        }
+        if let current = synthesizers[trackNumber - 1] as? WaveMorphedSynthesizer {
+            mixer.removeInput(current.oscillators[0])
+        }
+        if let current = synthesizers[trackNumber - 1] as? PhaseDisortedSynthesizer {
+            mixer.removeInput(current.oscillators[0])
+        }
+
+        switch(newSynthesizer){
+        case .PWMSynth:
+            synthesizers[trackNumber - 1] = PWMSynthesizer()
+            if let synth = synthesizers[trackNumber - 1] as? PWMSynthesizer {
+                mixer.addInput(synth.oscillators[0])
+                print("current1 synth: \(newSynthesizer.rawValue)")
+            }
+        case .WaveformMorphedSynth:
+            synthesizers[trackNumber - 1] = WaveMorphedSynthesizer()
+            if let synth = synthesizers[trackNumber - 1] as? WaveMorphedSynthesizer {
+                mixer.addInput(synth.oscillators[0])
+                print("current2 synth: \(newSynthesizer.rawValue)")
+            }
+        case.PhaseDisortedSynth:
+            synthesizers[trackNumber - 1] = PhaseDisortedSynthesizer()
+            if let synth = synthesizers[trackNumber - 1] as? PhaseDisortedSynthesizer {
+                mixer.addInput(synth.oscillators[0])
+                print("current3 synth: \(newSynthesizer.rawValue)")
+            }
+        }
+        
+        
     }
     
     func checkIfAudioExists(){
@@ -340,11 +380,7 @@ class AudioManager: ObservableObject {
             }
         }
     }
-    
-    func enableMidi(){
-        print("enableMidi")
-    }
-    
+
     func playSeq(){
         sequencer.play()
 

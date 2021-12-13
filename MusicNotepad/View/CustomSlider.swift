@@ -14,7 +14,7 @@ struct CustomSlider: View {
     @State private var xOffset: CGFloat = 0
     @State private var lastOffset: CGFloat = 0
     var label: String
-    var bounds: ClosedRange<Float> = 0.0 ... 1.0
+    var range: ClosedRange<Float> = 0.0 ... 1.0
     var step: Float = 0.01
     
     @EnvironmentObject var player: AudioManager
@@ -43,14 +43,14 @@ struct CustomSlider: View {
                             }
                             let availableWidth = geometry.size.width
                             xOffset = max(0, min(lastOffset +  gestureValue.translation.width, availableWidth))
-                            let newValue = (bounds.upperBound - bounds.lowerBound) * Float(xOffset / availableWidth) + bounds.lowerBound
+                            let newValue = (range.upperBound - range.lowerBound) * Float(xOffset / availableWidth) + range.lowerBound
                             let steppedNewValue = (round(newValue / step) * step)
-                            value = min(bounds.upperBound, max(bounds.lowerBound, steppedNewValue))
+                            value = min(range.upperBound, max(range.lowerBound, steppedNewValue))
                         }))
                     
                 }
                 .onAppear(){
-                    let percentage = 1 - (bounds.upperBound - value) / (bounds.upperBound - bounds.lowerBound)
+                    let percentage = 1 - (range.upperBound - value) / (range.upperBound - range.lowerBound)
                     xOffset = geometry.size.width * CGFloat(percentage)
                     lastOffset = xOffset
                 }

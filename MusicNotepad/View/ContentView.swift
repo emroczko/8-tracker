@@ -138,7 +138,7 @@ struct ExpandedTrackView: View {
                     .frame(height: 15)
                     .padding()
                 
-                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", bounds: 0.0 ... 100.0)
+                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", range: 0.0 ... 100.0)
                     .frame(height: 15)
                     .padding()
                 

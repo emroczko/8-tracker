@@ -8,37 +8,55 @@
 import SwiftUI
 
 struct InstrumentSettings: View {
-    @EnvironmentObject var player: AudioManager
+    @EnvironmentObject var player : AudioManager
+    @State var selectedSynth : SynthesizerType = SynthesizerType.PWMSynth
     var trackNumber: Int
     
     var body: some View {
         VStack {
             Spacer()
                 .frame(height: 50)
-            Picker(selection: .constant(1), label: Text("Picker"), content: {
+            Picker(selection: $selectedSynth, label: Text("Picker"), content: {
                 
-                Text("Phase disorted synth").tag(1)
+                Text(SynthesizerType.PWMSynth.rawValue).tag(SynthesizerType.PWMSynth)
                     .foregroundColor(.blue)
-                Text("Waveform morphed synth").tag(2)
+                Text(SynthesizerType.WaveformMorphedSynth.rawValue).tag(SynthesizerType.WaveformMorphedSynth)
                     .foregroundColor(.blue)
-                Text("PWM synth").tag(3)
+                Text(SynthesizerType.PhaseDisortedSynth.rawValue).tag(SynthesizerType.PhaseDisortedSynth)
                     .foregroundColor(.blue)
                 
             })
-                .pickerStyle(.wheel)
+            .pickerStyle(.wheel)
+            .onChange(of: selectedSynth, perform: { newSynthesizer in
+                print("new value: \(newSynthesizer.rawValue)")
+                player.changeSynthesizer(trackNumber: trackNumber, newSynthesizer: newSynthesizer)
+            })
+            
             CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume")
                 .frame(height: 15)
                 .padding()
-            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Mod")
-                .frame(height: 15)
-                .padding()
+            
+            switch(selectedSynth){
+            case .PWMSynth:
+                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "PWM", range: 0.1 ... 0.99)
+                    .frame(height: 15)
+                    .padding()
+            case .WaveformMorphedSynth:
+                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "Morph", range: 0 ... 3)
+                    .frame(height: 15)
+                    .padding()
+            case.PhaseDisortedSynth:
+                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "Phase", range: -1 ... 1)
+                    .frame(height: 15)
+                    .padding()
+            }
             Spacer()
                 .frame(height: 50)
+            
+            //player.synthesizers[trackNumber] is PWMSynthesizer
         }
-        
-        
-        
     }
+
 }
 
 struct SwiftUIView_Previews: PreviewProvider {
