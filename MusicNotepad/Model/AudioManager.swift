@@ -12,6 +12,7 @@ import STKAudioKit
 import AVKit
 import SwiftUI
 import SoundpipeAudioKit
+import AudioKitUI
 
 struct MetronomeData {
     var isPlaying = false
@@ -48,7 +49,8 @@ struct TrackData {
     var audioVolume : AUValue = 75
 }
 
-class AudioManager: ObservableObject {
+class AudioManager: ObservableObject, KeyboardDelegate {
+
 
     let tracksCount : Int = 8
     let engine = AudioEngine()
@@ -435,6 +437,15 @@ class AudioManager: ObservableObject {
             data.isRecording = false
         }
     }
+    
+    func noteOn(note: MIDINoteNumber) {
+        synthesizers[data.trackToRecord - 1].play(frequency: note.midiNoteToFrequency())
+    }
+    
+    func noteOff(note: MIDINoteNumber) {
+        synthesizers[data.trackToRecord - 1].stop(frequency: note.midiNoteToFrequency())
+    }
+    
     
     func record(){
         audioRecorder.startRecording(trackNumber: self.data.trackToRecord)

@@ -8,6 +8,7 @@
 import SwiftUI
 import AVKit
 import AudioKit
+import AudioKitUI
 
 
 let numberOfSamples: Int = 32
@@ -33,15 +34,22 @@ struct ContentView: View {
         ZStack{
             VStack{
                 ConsoleView()
-                ScrollView{
-                    VStack{
-                        
-                        ForEach(1...8, id: \.self) {
-                            trackNumber in
-                            TrackView(title: "Track " + String(trackNumber), trackNumber: trackNumber, trackFocus: $trackFocus)
+                if($applicationState.isKeyboardVisible.returnValue()){
+                    TrackView(title: "Track " + String(player.data.trackToRecord), trackNumber: player.data.trackToRecord, trackFocus: $trackFocus)
+                    KeyboardWidget(delegate: player, firstOctave: 1, octaveCount: 2, polyphonicMode: false)
+                        .cornerRadius(30)
+                }
+                else{
+                    ScrollView{
+                        VStack{
+                            ForEach(1...8, id: \.self) {
+                                trackNumber in
+                                TrackView(title: "Track " + String(trackNumber), trackNumber: trackNumber, trackFocus: $trackFocus)
+                            }
                         }
                     }
                 }
+                
             }.padding(.top, 40)
         }
         .animation(.linear(duration: 0.3))
@@ -57,223 +65,7 @@ struct ContentView: View {
             self.player.stop()
         }
     }
-    
 }
-
-struct TrackView: View {
-    var title: String
-    var trackNumber: Int
-    @Binding var trackFocus : [Int : Bool]
-    @State var viewHeight: CGFloat = 120
-
-    var body: some View {
-        Group{
-            if(trackFocus[trackNumber] == false){
-                CondensedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
-            }
-            else{
-                ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
-            }
-        }
-        .animation(.linear(duration: 0.3))
-        .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(30)
-    }
-    
-}
-
-struct ExpandedTrackView: View {
-    var title: String
-    var trackNumber: Int
-    var midiConverter: MidiConverter = MidiConverter()
-    @Binding var trackFocus : [Int : Bool]
-    @Binding var viewHeight: CGFloat
-    @State var progressValue: Float = 0.0
-    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
-    @EnvironmentObject var player: AudioManager
-    @State var isInstrumentSettingsExpanded: Bool = false
-    
-    
-    @EnvironmentObject var applicationState: ApplicationState
-    var timeProgress: Float = 0
-
-    
-    var body: some View {
-        
-        VStack{
-        TabView {
-            VStack {
-                HStack {
-                    Group{
-                        if($player.data.isRecording.returnValue() == false){
-                            CustomButtonView(imageName: "smallcircle.fill.circle",
-                                          function: record, color: .red)
-                        } else {
-                            CustomButtonView(imageName: "stop.circle",
-                                          function: stopRecording, color: .white)
-                        }
-                    }
-                    .disabled(applicationState.isPlaying)
-                    Group{
-                        if(!player.data.tracksMuted[trackNumber]!){
-                        CustomButtonView(imageName: "speaker.fill", function: muteTrack, color: .white)
-                        }
-                            else{
-                            CustomButtonView(imageName: "speaker.slash.fill", function: muteTrack, color: .blue)
-                        }
-                        if(player.data.soloTrack == trackNumber){
-                            CustomButtonView(imageName: "headphones", function: unSoloTrack, color: .yellow)
-                        }
-                        else{
-                            CustomButtonView(imageName: "headphones", function: soloTrack, color: .white)
-                        }
-                        
-                        CustomButtonView(imageName: "trash", function: deleteRecording, color: .gray)
-                    }
-                    .disabled(applicationState.isRecording || applicationState.isPlaying)
-                }
-                
-                ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo)
-                    .frame(height: 15)
-                    .padding()
-                
-                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", range: 0.0 ... 100.0)
-                    .frame(height: 15)
-                    .padding()
-                
-                    
-
-
-                if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == true){
-                    MidiControlsButtons(trackNumber: trackNumber)
-                }
-            }
-            .tabItem{
-                
-            }
-            
-            InstrumentSettings(trackNumber: trackNumber)
-            .tabItem {
-                
-            }
-        }
-        .tabViewStyle(PageTabViewStyle())
-            
-        Button(action: {
-            trackFocus = trackFocus.mapValues({ _ in false })
-            viewHeight = 0.4*UIScreen.screenWidth
-        }){
-            Image(systemName: "chevron.up")
-        }
-        .padding()
-        .disabled(applicationState.isRecording)
-        }
-    }
-    
-    func updateTrackFocus(){
-        if(trackFocus[trackNumber] == true){
-            trackFocus = trackFocus.mapValues({ _ in false })
-        }
-        else{
-            trackFocus = trackFocus.mapValues({ _ in false })
-            trackFocus.updateValue(true, forKey: trackNumber)
-        }
-    }
-    
-    func muteTrack(){
-        player.data.tracksMuted[trackNumber]?.toggle()
-    }
-    
-    func record() {
-        player.data.trackToRecord = trackNumber
-        player.data.isRecording = true
-        player.data.isPlaying = true
-        applicationState.isRecording = true
-    }
-    
-    func stopRecording() {
-        player.stopRecording()
-        player.stopTracks()
-        player.data.trackToRecord = 0
-        player.data.isPlaying = false
-        applicationState.isRecording = false
-        player.sequencer.rewind()
-        
-    }
-    
-    func soloTrack() {
-        player.data.soloTrack = trackNumber
-    }
-    
-    func unSoloTrack(){
-        player.data.soloTrack = 0
-    }
-    
-    func deleteRecording() {
-        player.clearTrack(trackNumber: trackNumber)
-    }
-}
-
-
-
-struct CondensedTrackView: View {
-    var title: String
-    var trackNumber: Int
-    @Binding var trackFocus : [Int : Bool]
-    @Binding var viewHeight: CGFloat
-    @EnvironmentObject var applicationState: ApplicationState
-    
-    var body: some View {
-        VStack{
-            Spacer()
-            HStack {
-                Text(title)
-                    .frame(width: UIScreen.screenWidth/10*4.25, height:
-                            UIScreen.screenHeight/12, alignment: .center)
-                    
-                .foregroundColor(.blue)
-    
-                Text(FilesManager.getDurationOfAudioFile(trackNumber: trackNumber))
-                    .frame(width: UIScreen.screenWidth/10*4.25, height:
-                            UIScreen.screenHeight/12, alignment: .center)
-                    .foregroundColor(.blue)
-                
-            }
-            Button(action: {
-                trackFocus = trackFocus.mapValues({ _ in false })
-                trackFocus.updateValue(true, forKey: trackNumber)
-                viewHeight = 320
-            }){
-                Image(systemName: "chevron.down")
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .disabled(applicationState.isRecording)
-    }
-}
-
-struct ProgressBar: View {
-    @Binding var value: Float
-    @Binding var tempo: Double
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Rectangle().frame(width: geometry.size.width , height: geometry.size.height)
-                    .opacity(0.3)
-                    .foregroundColor(Color(UIColor.systemTeal))
-                
-                Rectangle().frame(width: min(CGFloat(self.value)*geometry.size.width/31, geometry.size.width), height: geometry.size.height)
-                    .foregroundColor(Color(UIColor.systemBlue))
-                    .animation(
-                        .linear(duration: Double(60/tempo)))
-            }.cornerRadius(45.0)
-        }
-    }
-}
-
 
 struct ConsoleView: View {
     
@@ -287,10 +79,10 @@ struct ConsoleView: View {
     var body: some View {
         VStack {
             HStack {
-                CustomButtonView(imageName: "play.circle", function: start, color: applicationState.isPlaying ? .white : .green)
+                RoundButton(imageName: "play.circle", function: start, color: applicationState.isPlaying ? .white : .green)
                     .disabled($applicationState.isPlaying.returnValue() == true)
                 
-                CustomButtonView(imageName: "stop.circle", function: stop, color: applicationState.isPlaying ? .red : .white)
+                RoundButton(imageName: "stop.circle", function: stop, color: applicationState.isPlaying ? .red : .white)
                     .disabled($applicationState.isPlaying.returnValue() == false)
             }
             
@@ -377,44 +169,285 @@ struct ConsoleView: View {
         player.sequencer.rewind()
     }
 }
+
+struct TrackView: View {
+    var title: String
+    var trackNumber: Int
+    @Binding var trackFocus : [Int : Bool]
+    @State var viewHeight: CGFloat = 120
+
+    var body: some View {
+        Group{
+            if(trackFocus[trackNumber] == false){
+                CondensedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
+            }
+            else{
+                ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
+            }
+        }
+        .animation(.linear(duration: 0.3))
+        .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
+        .background(Color.black.opacity(0.75))
+        .cornerRadius(30)
+    }
     
-struct DarkButtonView: View {
-    @State var title: String
-    @Binding var isPressed : Bool
-    var function: () -> Void
+}
+
+struct ExpandedTrackView: View {
+    var title: String
+    var trackNumber: Int
+    var midiConverter: MidiConverter = MidiConverter()
+    @Binding var trackFocus : [Int : Bool]
+    @Binding var viewHeight: CGFloat
+    @State var progressValue: Float = 0.0
+    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
+    @EnvironmentObject var player: AudioManager
+    @State var isInstrumentSettingsExpanded: Bool = false
+    
+    
+    @EnvironmentObject var applicationState: ApplicationState
+    var timeProgress: Float = 0
+
     
     var body: some View {
-        Button(title, action: {
-            function()
-        })
-            .padding()
-            .foregroundColor(Color.blue)
-            .background(Color.black.opacity(isPressed ? 0.2 : 0.5))
-            .cornerRadius(30)
-            .foregroundColor(Color.black.opacity(0.75))
+        
+        VStack{
+        TabView {
+            VStack {
+                HStack {
+                    Group{
+                        if($player.data.isRecording.returnValue() == false){
+                            RoundButton(imageName: "smallcircle.fill.circle",
+                                          function: record, color: .red)
+                        } else {
+                            RoundButton(imageName: "stop.circle",
+                                          function: stopRecording, color: .white)
+                        }
+                    }
+                    .disabled(applicationState.isPlaying)
+                    Group{
+                        if(!player.data.tracksMuted[trackNumber]!){
+                        RoundButton(imageName: "speaker.fill", function: muteTrack, color: .white)
+                        }
+                            else{
+                            RoundButton(imageName: "speaker.slash.fill", function: muteTrack, color: .blue)
+                        }
+                        if(player.data.soloTrack == trackNumber){
+                            RoundButton(imageName: "headphones", function: unSoloTrack, color: .yellow)
+                        }
+                        else{
+                            RoundButton(imageName: "headphones", function: soloTrack, color: .white)
+                        }
+                        
+                        RoundButton(imageName: "trash", function: deleteRecording, color: .gray)
+                    }
+                    .disabled(applicationState.isRecording || applicationState.isPlaying)
+                }
+                
+                ProgressBar(value: $player.data.currentBeat, tempo: $player.data.tempo)
+                    .frame(height: 15)
+                    .padding()
+                
+                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", range: 0.0 ... 100.0)
+                    .frame(height: 15)
+                    .padding()
+                
+                if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == true){
+                    MidiControlsButtons(trackNumber: trackNumber)
+                }
+                
+                
+            }
+            .tabItem{
+                
+            }
+            
+            InstrumentSettings(trackNumber: trackNumber)
+            .tabItem {
+                
+            }
+        }
+        .tabViewStyle(PageTabViewStyle())
+            
+        HStack{
+            if($applicationState.isKeyboardVisible.returnValue() == false){
+                BiggerButton(imageName: "pianokeys.inverse", function: showKeys, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
+                    .padding(.trailing)
+                    .padding(.leading)
+            }
+            else{
+                BiggerButton(imageName: "pianokeys", function: hideKeys, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+                    .padding(.trailing)
+                    .padding(.leading)
+            }
+            
+        }
+            
+        
+        
+        Button(action: {
+            trackFocus = trackFocus.mapValues({ _ in false })
+            viewHeight = 0.4*UIScreen.screenWidth
+            applicationState.isKeyboardVisible = false
+        }){
+            Image(systemName: "chevron.up")
+        }
+        .padding()
+        .disabled(applicationState.isRecording)
+        }
+    }
+    
+    func showKeys(){
+        viewHeight = 0.7*UIScreen.screenHeight
+        player.data.trackToRecord = trackNumber
+        applicationState.isKeyboardVisible = true
+    }
+    
+    func hideKeys(){
+        applicationState.isKeyboardVisible = false
+        viewHeight = 0.5*UIScreen.screenHeight
+    }
+    
+    func updateTrackFocus(){
+        if(trackFocus[trackNumber] == true){
+            trackFocus = trackFocus.mapValues({ _ in false })
+        }
+        else{
+            trackFocus = trackFocus.mapValues({ _ in false })
+            trackFocus.updateValue(true, forKey: trackNumber)
+        }
+    }
+    
+    func muteTrack(){
+        player.data.tracksMuted[trackNumber]?.toggle()
+    }
+    
+    func record() {
+        player.data.trackToRecord = trackNumber
+        player.data.isRecording = true
+        player.data.isPlaying = true
+        applicationState.isRecording = true
+    }
+    
+    func stopRecording() {
+        player.stopRecording()
+        player.stopTracks()
+        player.data.trackToRecord = 0
+        player.data.isPlaying = false
+        applicationState.isRecording = false
+        player.sequencer.rewind()
+        
+    }
+    
+    func soloTrack() {
+        player.data.soloTrack = trackNumber
+    }
+    
+    func unSoloTrack(){
+        player.data.soloTrack = 0
+    }
+    
+    func deleteRecording() {
+        player.clearTrack(trackNumber: trackNumber)
+    }
+}
+
+struct CondensedTrackView: View {
+    var title: String
+    var trackNumber: Int
+    @Binding var trackFocus : [Int : Bool]
+    @Binding var viewHeight: CGFloat
+    @EnvironmentObject var applicationState: ApplicationState
+    
+    var body: some View {
+        VStack{
+            Spacer()
+            HStack {
+                Text(title)
+                    .frame(width: UIScreen.screenWidth/10*4.25, height:
+                            UIScreen.screenHeight/12, alignment: .center)
+                    
+                .foregroundColor(.blue)
+    
+                Text(FilesManager.getDurationOfAudioFile(trackNumber: trackNumber))
+                    .frame(width: UIScreen.screenWidth/10*4.25, height:
+                            UIScreen.screenHeight/12, alignment: .center)
+                    .foregroundColor(.blue)
+                
+            }
+            Button(action: {
+                trackFocus = trackFocus.mapValues({ _ in false })
+                trackFocus.updateValue(true, forKey: trackNumber)
+                viewHeight = 320
+            }){
+                Image(systemName: "chevron.down")
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .disabled(applicationState.isRecording)
     }
 }
 
 struct MidiControlsButtons: View {
     var trackNumber: Int
-    @State var convertToMidiPressed : Bool = false
     var midiConverter: MidiConverter = MidiConverter()
     
     @EnvironmentObject var player: AudioManager
     
     var body: some View {
-        
+        VStack{
         if (FilesManager.checkIfFileExists(trackNumber: trackNumber)) {
-            HStack{
-            DarkButtonView(title: "Audio", isPressed: $player.tracksData[trackNumber - 1].isAudioEnabled, function: enableAudio)
-            DarkButtonView(title: "MIDI", isPressed:  $player.tracksData[trackNumber - 1].isMidiEnabled,function: enableMidi)
+            HStack {
+                ZStack{
+                    Capsule()
+                        .opacity(0)
+                        .background(Color.black.opacity(0.5))
+                        .cornerRadius(30)
+                        .frame(height: 55)
+                        .padding(.leading)
+                        .padding(.trailing)
+                        
+                    HStack(spacing: 0){
+                        Text("Audio")
+                            .foregroundColor(.blue)
+                            .padding()
+                        
+                        Toggle("", isOn: $player.tracksData[trackNumber - 1].isAudioEnabled)
+                        .foregroundColor(.blue)
+                        .toggleStyle(SwitchToggleStyle(tint: .blue))
+                        .frame(width: 60)
+                        .padding()
+                    }
+                }
+                ZStack{
+                    Capsule()
+                        .opacity(0)
+                        .background(Color.black.opacity(0.5))
+                        .cornerRadius(30)
+                        .frame(height: 55)
+                        .padding(.leading)
+                        .padding(.trailing)
+                    HStack(spacing: 0){
+                        Text("Midi")
+                            .foregroundColor(.blue)
+                            .padding()
+                        
+                        Toggle("", isOn: $player.tracksData[trackNumber - 1].isMidiEnabled)
+                        .foregroundColor(.blue)
+                        .toggleStyle(SwitchToggleStyle(tint: .blue))
+                        .frame(width: 60)
+                        .padding()
+                        .onChange(of: player.tracksData[trackNumber - 1].isMidiEnabled) { newValue in
+                            enableMidi()
+                        }
+                    }
+                }
+                
             }
         }
+        }
         
-    }
-    
-    func enableAudio(){
-        player.tracksData[trackNumber - 1].isAudioEnabled.toggle()
     }
     
     func enableMidi(){
@@ -422,7 +455,6 @@ struct MidiControlsButtons: View {
             convertToMidi()
             print("converting")
         }
-        player.tracksData[trackNumber - 1].isMidiEnabled.toggle()
         if(player.tracksData[trackNumber - 1].isMidiEnabled == false){
             player.sequencer.tracks[trackNumber + 3].clear()
         }

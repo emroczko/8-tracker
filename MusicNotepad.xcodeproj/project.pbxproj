@@ -15,7 +15,7 @@
 		521A38122766DD100070FF70 /* CustomSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521A38112766DD100070FF70 /* CustomSlider.swift */; };
 		52271E7D272402D00012EF96 /* Recording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7C272402D00012EF96 /* Recording.swift */; };
 		52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7E2724036F0012EF96 /* Date+Extension.swift */; };
-		5237FB4927287E3400B1912C /* CustomButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5237FB4827287E3400B1912C /* CustomButtonView.swift */; };
+		5237FB4927287E3400B1912C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5237FB4827287E3400B1912C /* RoundButton.swift */; };
 		523D682D2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D682C2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift */; };
 		5251DDA426EBDB22004BF9EA /* CustomAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251DDA326EBDB22004BF9EA /* CustomAudioRecorder.swift */; };
 		5254979F2755056D00EDFAC2 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5254979E2755056D00EDFAC2 /* Accelerate.framework */; };
@@ -24,6 +24,10 @@
 		526CD0432727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
 		528AC19F2767CA8400F0270A /* WaveMorphedSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC19E2767CA8400F0270A /* WaveMorphedSynthesizer.swift */; };
 		528AC1A12767CE8000F0270A /* PhaseDisortedSynth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC1A02767CE8000F0270A /* PhaseDisortedSynth.swift */; };
+		528AC1A32768034E00F0270A /* BiggerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC1A22768034E00F0270A /* BiggerButton.swift */; };
+		528AC1A52768035D00F0270A /* DarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC1A42768035D00F0270A /* DarkButton.swift */; };
+		528AC1A92768127700F0270A /* AudioKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 528AC1A82768127700F0270A /* AudioKitUI */; };
+		528AC1AB276816E600F0270A /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AC1AA276816E600F0270A /* ProgressBar.swift */; };
 		528BD0FE2753B0070038F231 /* MidiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528BD0FD2753B0070038F231 /* MidiConverter.swift */; };
 		529176AF275517A900AFC0EA /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 529176AE275517A900AFC0EA /* AudioKit */; };
 		529176B2275517C500AFC0EA /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 529176B1275517C500AFC0EA /* SoundpipeAudioKit */; };
@@ -68,13 +72,16 @@
 		521A38112766DD100070FF70 /* CustomSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlider.swift; sourceTree = "<group>"; };
 		52271E7C272402D00012EF96 /* Recording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recording.swift; sourceTree = "<group>"; };
 		52271E7E2724036F0012EF96 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
-		5237FB4827287E3400B1912C /* CustomButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonView.swift; sourceTree = "<group>"; };
+		5237FB4827287E3400B1912C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		523D682C2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVMutableCompositionTrack+Extension.swift"; sourceTree = "<group>"; };
 		5251DDA326EBDB22004BF9EA /* CustomAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAudioRecorder.swift; sourceTree = "<group>"; };
 		5254979E2755056D00EDFAC2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		526CD0402727602C006A1772 /* ApplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationState.swift; sourceTree = "<group>"; };
 		528AC19E2767CA8400F0270A /* WaveMorphedSynthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveMorphedSynthesizer.swift; sourceTree = "<group>"; };
 		528AC1A02767CE8000F0270A /* PhaseDisortedSynth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseDisortedSynth.swift; sourceTree = "<group>"; };
+		528AC1A22768034E00F0270A /* BiggerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiggerButton.swift; sourceTree = "<group>"; };
+		528AC1A42768035D00F0270A /* DarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkButton.swift; sourceTree = "<group>"; };
+		528AC1AA276816E600F0270A /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		528BD0FD2753B0070038F231 /* MidiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiConverter.swift; sourceTree = "<group>"; };
 		529805AE274950C7002F6158 /* Binding+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extension.swift"; sourceTree = "<group>"; };
 		52B3C68426E6E0E0001A33B1 /* MusicNotepad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicNotepad.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				529176AF275517A900AFC0EA /* AudioKit in Frameworks */,
+				528AC1A92768127700F0270A /* AudioKitUI in Frameworks */,
 				5254979F2755056D00EDFAC2 /* Accelerate.framework in Frameworks */,
 				529176B2275517C500AFC0EA /* SoundpipeAudioKit in Frameworks */,
 				529176B5275517E000AFC0EA /* STKAudioKit in Frameworks */,
@@ -167,10 +175,11 @@
 		52271E82272403C00012EF96 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				528AC1A6276803BE00F0270A /* Buttons */,
 				52B3C68926E6E0E0001A33B1 /* ContentView.swift */,
-				5237FB4827287E3400B1912C /* CustomButtonView.swift */,
 				52B9118E27511CE800905B6B /* InstrumentSettings.swift */,
 				521A38112766DD100070FF70 /* CustomSlider.swift */,
+				528AC1AA276816E600F0270A /* ProgressBar.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -196,6 +205,16 @@
 				5254979E2755056D00EDFAC2 /* Accelerate.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		528AC1A6276803BE00F0270A /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				5237FB4827287E3400B1912C /* RoundButton.swift */,
+				528AC1A22768034E00F0270A /* BiggerButton.swift */,
+				528AC1A42768035D00F0270A /* DarkButton.swift */,
+			);
+			path = Buttons;
 			sourceTree = "<group>";
 		};
 		52B3C67B26E6E0E0001A33B1 = {
@@ -281,6 +300,7 @@
 				529176AE275517A900AFC0EA /* AudioKit */,
 				529176B1275517C500AFC0EA /* SoundpipeAudioKit */,
 				529176B4275517E000AFC0EA /* STKAudioKit */,
+				528AC1A82768127700F0270A /* AudioKitUI */,
 			);
 			productName = MusicNotepad;
 			productReference = 52B3C68426E6E0E0001A33B1 /* MusicNotepad.app */;
@@ -360,6 +380,7 @@
 				529176AD275517A900AFC0EA /* XCRemoteSwiftPackageReference "AudioKit" */,
 				529176B0275517C500AFC0EA /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */,
 				529176B3275517E000AFC0EA /* XCRemoteSwiftPackageReference "STKAudioKit" */,
+				528AC1A72768127700F0270A /* XCRemoteSwiftPackageReference "AudioKitUI" */,
 			);
 			productRefGroup = 52B3C68526E6E0E0001A33B1 /* Products */;
 			projectDirPath = "";
@@ -406,6 +427,7 @@
 			files = (
 				52B9118F27511CE800905B6B /* InstrumentSettings.swift in Sources */,
 				52F54CA327411E8200E3DA6C /* AudioManager.swift in Sources */,
+				528AC1A32768034E00F0270A /* BiggerButton.swift in Sources */,
 				52135CCE2763E9F800E8D3F9 /* Synthesizer.swift in Sources */,
 				52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */,
 				52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */,
@@ -416,15 +438,17 @@
 				52135CD127640A5F00E8D3F9 /* PWMSynthesizer.swift in Sources */,
 				521987E3275BE3D80007542C /* Array+Extension.swift in Sources */,
 				5251DDA426EBDB22004BF9EA /* CustomAudioRecorder.swift in Sources */,
-				5237FB4927287E3400B1912C /* CustomButtonView.swift in Sources */,
+				5237FB4927287E3400B1912C /* RoundButton.swift in Sources */,
 				529805AF274950C7002F6158 /* Binding+Extension.swift in Sources */,
 				52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */,
 				521A38122766DD100070FF70 /* CustomSlider.swift in Sources */,
+				528AC1A52768035D00F0270A /* DarkButton.swift in Sources */,
 				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
 				528AC19F2767CA8400F0270A /* WaveMorphedSynthesizer.swift in Sources */,
 				521987E5275CEEFB0007542C /* MidiPlayer.swift in Sources */,
 				52271E7D272402D00012EF96 /* Recording.swift in Sources */,
 				526CD0412727602C006A1772 /* ApplicationState.swift in Sources */,
+				528AC1AB276816E600F0270A /* ProgressBar.swift in Sources */,
 				52CCEEA0274A549A00258EFA /* FilesManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -751,6 +775,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		528AC1A72768127700F0270A /* XCRemoteSwiftPackageReference "AudioKitUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/AudioKitUI";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		529176AD275517A900AFC0EA /* XCRemoteSwiftPackageReference "AudioKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AudioKit/AudioKit.git";
@@ -778,6 +810,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		528AC1A82768127700F0270A /* AudioKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 528AC1A72768127700F0270A /* XCRemoteSwiftPackageReference "AudioKitUI" */;
+			productName = AudioKitUI;
+		};
 		529176AE275517A900AFC0EA /* AudioKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 529176AD275517A900AFC0EA /* XCRemoteSwiftPackageReference "AudioKit" */;

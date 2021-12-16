@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CustomButtonView: View {
+struct RoundButton: View {
     var imageName: String
     var trackNumber: Int?
     var function: () -> Void
@@ -32,6 +32,6 @@ struct CustomButtonView: View {
 
 struct CustomButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        CustomButtonView(imageName: "circle.fill", function: {}, color: Color.white)
+        RoundButton(imageName: "circle.fill", function: {}, color: Color.white)
     }
 }

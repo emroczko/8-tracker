@@ -9,6 +9,7 @@ import Foundation
 import SoundpipeAudioKit
 import AudioKit
 import AudioToolbox
+import AudioKitUI
 
 protocol Synthesizer {
     var amplitude: AUValue { get set }
