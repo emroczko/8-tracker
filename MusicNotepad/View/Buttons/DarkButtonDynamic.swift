@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DarkButton: View {
+struct DarkButtonDynamic: View {
     var title: String
     @Binding var isPressed : Bool
     var function: () -> Void
@@ -28,7 +28,7 @@ struct DarkButtonMock : View {
     @State var isPressed : Bool = true
     
     var body: some View {
-        DarkButton(title: "Test", isPressed: $isPressed) {
+        DarkButtonDynamic(title: "Test", isPressed: $isPressed) {
             
         }
     }

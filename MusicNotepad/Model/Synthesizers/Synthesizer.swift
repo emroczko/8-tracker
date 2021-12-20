@@ -13,9 +13,9 @@ import AudioKitUI
 
 protocol Synthesizer {
     var amplitude: AUValue { get set }
-    var frequency: AUValue { get set }
     var voices: Int { get set }
     var uniqueModification: AUValue { get set }
+    var activeVoices : [Bool] { get set }
     
     func play(frequency: AUValue)
     func stop(frequency: AUValue)

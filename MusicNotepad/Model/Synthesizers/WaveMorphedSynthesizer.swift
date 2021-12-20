@@ -13,10 +13,15 @@ import SoundpipeAudioKit
 
 
 class WaveMorphedSynthesizer : Synthesizer, Node {
+    
     var connections: [Node] { [] }
     var avAudioNode = instantiate(generator: "morf")
     
-    var amplitude: AUValue = 1
+    var amplitude: AUValue = 0.8 {
+        didSet {
+            changeAmplitude(value: amplitude)
+        }
+    }
     var frequency: AUValue = 440
     var uniqueModification: Float = 1.5 {
         didSet {
@@ -25,12 +30,14 @@ class WaveMorphedSynthesizer : Synthesizer, Node {
     }
     var oscillators: [MorphingOscillator] = []
     
-    var voices: Int = 3 {
+    var voices: Int = 4 {
         didSet{
             clearOscillators()
             fillSynthesizerWithOscillators()
         }
     }
+    
+    var activeVoices: [Bool] = []
     
     init(){
         setupParameters()
@@ -62,23 +69,31 @@ class WaveMorphedSynthesizer : Synthesizer, Node {
         }
     }
     
+    func findFreeVoice() -> Int {
+        for i in 0 ... oscillators.count - 1 {
+            if(oscillators[i].isStarted == false){
+                    return i
+            }
+        }
+        return -1
+    }
+    
     
     func play(frequency: AUValue) {
         print("playing")
-//        for oscillator in oscillators {
-//            if (oscillator.isStarted == false) {
-//                oscillator.frequency = frequency
-//                oscillator.start()
-//            }
-//        }
-        oscillators[0].frequency = frequency
-        oscillators[0].start()
+        let freeVoiceNumber = findFreeVoice()
+        if(freeVoiceNumber == -1){
+            return
+        }
+        oscillators[freeVoiceNumber].frequency = frequency
+        oscillators[freeVoiceNumber].start()
     }
     
     func stop(frequency: AUValue) {
-        for oscillator in oscillators {
-            if (oscillator.frequency == frequency && oscillator.isStarted) {
-                oscillator.stop()
+        for i in 0 ... oscillators.count - 1 {
+            if (oscillators[i].frequency == frequency && oscillators[i].isStarted) {
+                oscillators[i].stop()
+                
             }
         }
     }

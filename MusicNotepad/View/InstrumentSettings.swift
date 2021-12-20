@@ -30,7 +30,7 @@ struct InstrumentSettings: View {
                 player.changeSynthesizer(trackNumber: trackNumber, newSynthesizer: newSynthesizer)
             })
             
-            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume")
+            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume", range: 0 ... 1)
                 .frame(height: 15)
                 .padding(.trailing)
                 .padding(.leading)

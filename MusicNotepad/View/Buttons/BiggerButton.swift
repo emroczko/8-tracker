@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct BiggerButton: View {
-    var imageName: String
+    var imageName: String?
+    var title: String?
     var function: () -> Void
     var imageColor: Color
     var linearGradient : LinearGradient
@@ -17,13 +18,19 @@ struct BiggerButton: View {
         Button(action: {
             function()
         }){
-            Image(systemName: imageName)
+            if(imageName != nil){
+                Image(systemName: imageName!)
+            }
+            if(title != nil){
+                Text(title!)
+            }
         }
             .frame(maxWidth: .infinity)
             .padding()
             .foregroundColor(imageColor)
             .background(linearGradient)
             .cornerRadius(30)
+        
     }
 }
 

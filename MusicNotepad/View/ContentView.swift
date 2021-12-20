@@ -34,11 +34,16 @@ struct ContentView: View {
         ZStack{
             VStack{
                 ConsoleView()
-                if($applicationState.isKeyboardVisible.returnValue()){
-                    TrackView(title: "Track " + String(player.data.trackToRecord), trackNumber: player.data.trackToRecord, trackFocus: $trackFocus)
-                    KeyboardWidget(delegate: player, firstOctave: 1, octaveCount: 2, polyphonicMode: false)
-                        .cornerRadius(30)
+                if($applicationState.isKeyboardVisible.returnValue() || $applicationState.isMidiViewVisible.returnValue()){
+                    TrackView(title: "Track " + String(player.data.trackToRecord), trackNumber: player.data.currentTrack, trackFocus: $trackFocus)
+                    if($applicationState.isKeyboardVisible.returnValue()){
+                    KeyboardManager()
+                    }
+                    if($applicationState.isMidiViewVisible.returnValue()){
+                        MidiNotesView(numberOfBeats: player.data.sequenceLength)
+                    }
                 }
+
                 else{
                     ScrollView{
                         VStack{
@@ -185,7 +190,7 @@ struct TrackView: View {
                 ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
             }
         }
-        .animation(.linear(duration: 0.3))
+        //.animation(.linear(duration: 0.3))
         .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
         .background(Color.black.opacity(0.75))
         .cornerRadius(30)
@@ -227,9 +232,9 @@ struct ExpandedTrackView: View {
                     .disabled(applicationState.isPlaying)
                     Group{
                         if(!player.data.tracksMuted[trackNumber]!){
-                        RoundButton(imageName: "speaker.fill", function: muteTrack, color: .white)
+                            RoundButton(imageName: "speaker.fill", function: muteTrack, color: .white)
                         }
-                            else{
+                        else{
                             RoundButton(imageName: "speaker.slash.fill", function: muteTrack, color: .blue)
                         }
                         if(player.data.soloTrack == trackNumber){
@@ -248,11 +253,17 @@ struct ExpandedTrackView: View {
                     .frame(height: 15)
                     .padding()
                 
-                CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", range: 0.0 ... 100.0)
-                    .frame(height: 15)
+                if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == false &&
+                   $player.tracksData[trackNumber - 1].isMidiRecorded.returnValue() == false){
+                    RecordingOptions(trackNumber: trackNumber)
                     .padding()
+                }
+                 
                 
                 if($player.tracksData[trackNumber - 1].isAudioRecorded.returnValue() == true){
+                    CustomSlider(value: $player.tracksData[trackNumber - 1].audioVolume, label: "Volume", range: 0.0 ... 100.0)
+                        .frame(height: 15)
+                        .padding()
                     MidiControlsButtons(trackNumber: trackNumber)
                 }
                 
@@ -280,11 +291,19 @@ struct ExpandedTrackView: View {
                     .padding(.trailing)
                     .padding(.leading)
             }
+            if($applicationState.isMidiViewVisible.returnValue() == false){
+                BiggerButton(imageName: "pianokeys.inverse", function: showMidiView, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
+                    .padding(.trailing)
+                    .padding(.leading)
+            }
+            else{
+                BiggerButton(imageName: "pianokeys", function: hideMidiView, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+                    .padding(.trailing)
+                    .padding(.leading)
+            }
             
         }
             
-        
-        
         Button(action: {
             trackFocus = trackFocus.mapValues({ _ in false })
             viewHeight = 0.4*UIScreen.screenWidth
@@ -301,10 +320,23 @@ struct ExpandedTrackView: View {
         viewHeight = 0.7*UIScreen.screenHeight
         player.data.trackToRecord = trackNumber
         applicationState.isKeyboardVisible = true
+        applicationState.isMidiViewVisible = false
     }
     
     func hideKeys(){
         applicationState.isKeyboardVisible = false
+        viewHeight = 0.5*UIScreen.screenHeight
+    }
+    
+    func showMidiView(){
+        viewHeight = 0.7*UIScreen.screenHeight
+        player.data.trackToRecord = trackNumber
+        applicationState.isMidiViewVisible = true
+        applicationState.isKeyboardVisible = false
+    }
+    
+    func hideMidiView(){
+        applicationState.isMidiViewVisible = false
         viewHeight = 0.5*UIScreen.screenHeight
     }
     
@@ -358,6 +390,7 @@ struct CondensedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @EnvironmentObject var applicationState: ApplicationState
+    @EnvironmentObject var player: AudioManager
     
     var body: some View {
         VStack{
@@ -378,6 +411,7 @@ struct CondensedTrackView: View {
             Button(action: {
                 trackFocus = trackFocus.mapValues({ _ in false })
                 trackFocus.updateValue(true, forKey: trackNumber)
+                player.data.currentTrack = trackNumber
                 viewHeight = 320
             }){
                 Image(systemName: "chevron.down")
@@ -473,5 +507,97 @@ struct MidiControlsButtons: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct KeyboardManager: View {
+    @EnvironmentObject var player: AudioManager
+    @State var keyboardOctave : Int = 2
+    @State var octaveCount : Int = 1
+    
+    var body: some View {
+        VStack(spacing: 0){
+            HStack{
+                HStack {
+                    Stepper(value: $keyboardOctave, in: -2 ... 5){}
+                        .frame(width: 80)
+                    Image(systemName: "music.note")
+                        .foregroundColor(.blue)
+                        .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
+
+                }
+                .frame(maxWidth: .infinity)
+                
+                HStack {
+                    Image(systemName: "pianokeys")
+                        .foregroundColor(.blue)
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    Stepper(value: $octaveCount, in: 1 ... 3){}
+                        .frame(width: 70)
+                        .padding(.trailing)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .frame(height: 60)
+            .background(Color.black.opacity(0.7))
+
+        KeyboardWidget(delegate: player, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
+            
+        }
+        .cornerRadius(30)
+    }
+}
+
+struct RecordingOptions: View {
+    
+    @EnvironmentObject var player: AudioManager
+    @State var isAudioPressed: Bool = true
+    @State var isMidiPressed: Bool = false
+    
+    var trackNumber : Int
+    
+    var body: some View {
+        VStack {
+            Text("Track type:")
+                .foregroundColor(.blue)
+            
+            HStack{
+                if($isAudioPressed.returnValue()){
+                    BiggerButton(title: "Audio", function: toggleAudio, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+
+                }
+                else{
+                    BiggerButton(title: "Audio", function: toggleAudio, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
+                }
+                
+                if($isMidiPressed.returnValue()){
+                    BiggerButton(title: "Midi", function: toggleAudio, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+
+                }
+                else{
+                    BiggerButton(title: "Midi", function: toggleMidi, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
+                }
+                
+            }
+        }
+    }
+    
+    func toggleAudio(){
+        isAudioPressed.toggle()
+        isMidiPressed = !isAudioPressed
+    }
+    
+    func toggleMidi(){
+        isMidiPressed.toggle()
+        isAudioPressed = !isMidiPressed
+    }
+    
+    func changeTrackType(){
+        if(isAudioPressed){
+            player.tracksData[trackNumber - 1].trackType = .AUDIO
+        }
+        if(isMidiPressed){
+            player.tracksData[trackNumber - 1].trackType = .MIDI
+        }
     }
 }

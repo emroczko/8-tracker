@@ -14,4 +14,5 @@ class ApplicationState : ObservableObject{
     @Published var isRecording: Bool = false
     @Published var isPlaying: Bool = false
     @Published var isKeyboardVisible = false
+    @Published var isMidiViewVisible = false
 }
