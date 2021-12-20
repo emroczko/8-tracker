@@ -13,11 +13,16 @@ import SoundpipeAudioKit
 
 
 class PhaseDisortedSynthesizer : Synthesizer, Node {
+    
     var connections: [Node] { [] }
     var avAudioNode = instantiate(generator: "pdho")
     
-    var amplitude: AUValue = 1
-    var frequency: AUValue = 440
+    var amplitude: AUValue = 0.8 {
+        didSet {
+            changeAmplitude(value: amplitude)
+        }
+    }
+    
     var uniqueModification: Float = 0 {
         didSet {
             changeUniqueModification(value: uniqueModification)
@@ -25,24 +30,33 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
     }
     var oscillators: [PhaseDistortionOscillator] = []
     
-    var voices: Int = 3 {
+    var voices: Int = 4 {
         didSet{
             clearOscillators()
             fillSynthesizerWithOscillators()
         }
     }
     
+    var activeVoices: [Bool] = []
+    
     init(){
         setupParameters()
         changeUniqueModification(value: uniqueModification)
         fillSynthesizerWithOscillators()
+        initOscillators()
     }
     
+    func initOscillators(){
+        for oscillator in oscillators {
+            oscillator.$amplitude.ramp(to: 0.8, duration: 0.02)
+        }
+    }
     
     func fillSynthesizerWithOscillators(){
         clearOscillators()
         for _ in 1 ... voices {
             oscillators.append(PhaseDistortionOscillator())
+            activeVoices.append(false)
         }
     }
     
@@ -52,33 +66,42 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
     
     func changeAmplitude(value: AUValue) {
         for oscillator in oscillators {
-            oscillator.amplitude = value
+            oscillator.$amplitude.ramp(to: value, duration: 0.02)
         }
     }
     
     func changeUniqueModification(value: AUValue) {
         for oscillator in oscillators {
-            oscillator.phaseDistortion = value
+            oscillator.$phaseDistortion.ramp(to: value, duration: 0.02)
         }
     }
     
+    func findFreeVoice() -> Int {
+        for i in 0 ... oscillators.count - 1 {
+            if(activeVoices[i] == false){
+                    return i
+            }
+        }
+        return -1
+    }
     
     func play(frequency: AUValue) {
-        print("playing")
-//        for oscillator in oscillators {
-//            if (oscillator.isStarted == false) {
-//                oscillator.frequency = frequency
-//                oscillator.start()
-//            }
-//        }
-        oscillators[0].frequency = frequency
-        oscillators[0].start()
+        let freeVoiceNumber = findFreeVoice()
+        if(freeVoiceNumber == -1){
+            return
+        }
+        print("playing oscillator \(freeVoiceNumber + 1): frequency: \(oscillators[freeVoiceNumber].frequency)")
+        activeVoices[freeVoiceNumber] = true
+        oscillators[freeVoiceNumber].start()
+        oscillators[freeVoiceNumber].$frequency.ramp(to: frequency, duration: 0.02)
+        oscillators[freeVoiceNumber].$amplitude.ramp(to: amplitude, duration: 0.02)
     }
     
     func stop(frequency: AUValue) {
-        for oscillator in oscillators {
-            if (oscillator.frequency == frequency && oscillator.isStarted) {
-                oscillator.stop()
+        for i in 0 ... oscillators.count - 1 {
+            if (oscillators[i].frequency == frequency && activeVoices[i] == true) {//&& oscillators[i].isStarted) {
+                oscillators[i].amplitude = 0
+                activeVoices[i] = false
             }
         }
     }
@@ -88,5 +111,4 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
             oscillator.stop()
         }
     }
-
 }

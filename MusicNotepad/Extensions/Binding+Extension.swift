@@ -13,3 +13,9 @@ extension Binding where Value == Bool {
         return self.wrappedValue
     }
 }
+
+extension Binding where Value == TrackType {
+    func returnValue() -> TrackType {
+        return self.wrappedValue
+    }
+}

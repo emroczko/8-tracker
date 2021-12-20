@@ -14,8 +14,6 @@ struct InstrumentSettings: View {
     
     var body: some View {
         VStack {
-            Spacer()
-                .frame(height: 50)
             Picker(selection: $selectedSynth, label: Text("Picker"), content: {
                 
                 Text(SynthesizerType.PWMSynth.rawValue).tag(SynthesizerType.PWMSynth)
@@ -32,9 +30,11 @@ struct InstrumentSettings: View {
                 player.changeSynthesizer(trackNumber: trackNumber, newSynthesizer: newSynthesizer)
             })
             
-            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume")
+            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume", range: 0 ... 1)
                 .frame(height: 15)
-                .padding()
+                .padding(.trailing)
+                .padding(.leading)
+                .padding(.bottom)
             
             switch(selectedSynth){
             case .PWMSynth:
@@ -51,9 +51,7 @@ struct InstrumentSettings: View {
                     .padding()
             }
             Spacer()
-                .frame(height: 50)
-            
-            //player.synthesizers[trackNumber] is PWMSynthesizer
+                
         }
     }
 
