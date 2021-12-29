@@ -14,21 +14,6 @@ import CoreAudio
 import SoundpipeAudioKit
 import AudioKit
 
-struct PitchInformation {
-    var dataTable: [Int: [Float]] = [1: [],
-                                     2: [],
-                                     3: [],
-                                     4: [],
-                                     5: [],
-                                     6: [],
-                                     7: [],
-                                     8: []]
-    
-    mutating func append(trackNumber: Int, value: Float){
-        dataTable[trackNumber]?.append(value)
-    }
-}
-
 class CustomAudioRecorder: ObservableObject {
     
     @Published var isRecording : Bool = false

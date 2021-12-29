@@ -11,11 +11,12 @@
 		52135CCE2763E9F800E8D3F9 /* Synthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CCD2763E9F800E8D3F9 /* Synthesizer.swift */; };
 		52135CD127640A5F00E8D3F9 /* PWMSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52135CD027640A5F00E8D3F9 /* PWMSynthesizer.swift */; };
 		521987E3275BE3D80007542C /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521987E2275BE3D80007542C /* Array+Extension.swift */; };
-		521987E5275CEEFB0007542C /* MidiRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521987E4275CEEFB0007542C /* MidiRecorder.swift */; };
 		521A38122766DD100070FF70 /* CustomSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521A38112766DD100070FF70 /* CustomSlider.swift */; };
 		52271E7D272402D00012EF96 /* TrackType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7C272402D00012EF96 /* TrackType.swift */; };
 		52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52271E7E2724036F0012EF96 /* Date+Extension.swift */; };
+		523415C32772B5CE002D6D00 /* MidiNoteData+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523415C22772B5CE002D6D00 /* MidiNoteData+Extension.swift */; };
 		5237FB4927287E3400B1912C /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5237FB4827287E3400B1912C /* RoundButton.swift */; };
+		5239ACE5277BDEDB00A6CD66 /* SynthesizerPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5239ACE4277BDEDB00A6CD66 /* SynthesizerPlayer.swift */; };
 		523D682D2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523D682C2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift */; };
 		5251DDA426EBDB22004BF9EA /* CustomAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5251DDA326EBDB22004BF9EA /* CustomAudioRecorder.swift */; };
 		526CD0412727602C006A1772 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526CD0402727602C006A1772 /* ApplicationState.swift */; };
@@ -39,7 +40,7 @@
 		52B9119127512EC800905B6B /* UINavigationBar+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B9119027512EC800905B6B /* UINavigationBar+Extension.swift */; };
 		52C85AC026E7D0C60086844D /* UIScreen+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */; };
 		52CCEEA0274A549A00258EFA /* FilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CCEE9F274A549A00258EFA /* FilesManager.swift */; };
-		52F08CF2276F415600C436FD /* MidiNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F08CF1276F415600C436FD /* MidiNotesView.swift */; };
+		52F08CF2276F415600C436FD /* MidiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F08CF1276F415600C436FD /* MidiView.swift */; };
 		52F08CF5276F41E200C436FD /* STKAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 52F08CF4276F41E200C436FD /* STKAudioKit */; };
 		52F08CF8276F41F700C436FD /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 52F08CF7276F41F700C436FD /* SoundpipeAudioKit */; };
 		52F08CFB276F422C00C436FD /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 52F08CFA276F422C00C436FD /* AudioKit */; };
@@ -69,11 +70,12 @@
 		52135CCD2763E9F800E8D3F9 /* Synthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synthesizer.swift; sourceTree = "<group>"; };
 		52135CD027640A5F00E8D3F9 /* PWMSynthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PWMSynthesizer.swift; sourceTree = "<group>"; };
 		521987E2275BE3D80007542C /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
-		521987E4275CEEFB0007542C /* MidiRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiRecorder.swift; sourceTree = "<group>"; };
 		521A38112766DD100070FF70 /* CustomSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlider.swift; sourceTree = "<group>"; };
 		52271E7C272402D00012EF96 /* TrackType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackType.swift; sourceTree = "<group>"; };
 		52271E7E2724036F0012EF96 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		523415C22772B5CE002D6D00 /* MidiNoteData+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MidiNoteData+Extension.swift"; sourceTree = "<group>"; };
 		5237FB4827287E3400B1912C /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		5239ACE4277BDEDB00A6CD66 /* SynthesizerPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynthesizerPlayer.swift; sourceTree = "<group>"; };
 		523D682C2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVMutableCompositionTrack+Extension.swift"; sourceTree = "<group>"; };
 		5251DDA326EBDB22004BF9EA /* CustomAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAudioRecorder.swift; sourceTree = "<group>"; };
 		5254979E2755056D00EDFAC2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -103,7 +105,7 @@
 		52BD1B64276BF0FB0025781E /* AudioKitUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKitUI; path = ../AudioKitUI; sourceTree = "<group>"; };
 		52C85ABF26E7D0C60086844D /* UIScreen+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScreen+Extension.swift"; sourceTree = "<group>"; };
 		52CCEE9F274A549A00258EFA /* FilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManager.swift; sourceTree = "<group>"; };
-		52F08CF1276F415600C436FD /* MidiNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiNotesView.swift; sourceTree = "<group>"; };
+		52F08CF1276F415600C436FD /* MidiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidiView.swift; sourceTree = "<group>"; };
 		52F08CFC276F430900C436FD /* AudioKitUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKitUI; path = ../AudioKitUI; sourceTree = "<group>"; };
 		52F08CFD276F444B00C436FD /* AudioKitUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKitUI; path = ../AudioKitUI; sourceTree = "<group>"; };
 		52F08D00276F447600C436FD /* AudioKitUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKitUI; path = ../AudioKitUI; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				529805AE274950C7002F6158 /* Binding+Extension.swift */,
 				52B9119027512EC800905B6B /* UINavigationBar+Extension.swift */,
 				521987E2275BE3D80007542C /* Array+Extension.swift */,
+				523415C22772B5CE002D6D00 /* MidiNoteData+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -173,7 +176,7 @@
 				52F54CA227411E8200E3DA6C /* AudioManager.swift */,
 				52CCEE9F274A549A00258EFA /* FilesManager.swift */,
 				528BD0FD2753B0070038F231 /* MidiConverter.swift */,
-				521987E4275CEEFB0007542C /* MidiRecorder.swift */,
+				5239ACE4277BDEDB00A6CD66 /* SynthesizerPlayer.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -187,7 +190,7 @@
 				52B9118E27511CE800905B6B /* InstrumentSettings.swift */,
 				521A38112766DD100070FF70 /* CustomSlider.swift */,
 				528AC1AA276816E600F0270A /* ProgressBar.swift */,
-				52F08CF1276F415600C436FD /* MidiNotesView.swift */,
+				52F08CF1276F415600C436FD /* MidiView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -454,13 +457,15 @@
 			files = (
 				52B9118F27511CE800905B6B /* InstrumentSettings.swift in Sources */,
 				52F54CA327411E8200E3DA6C /* AudioManager.swift in Sources */,
-				52F08CF2276F415600C436FD /* MidiNotesView.swift in Sources */,
+				52F08CF2276F415600C436FD /* MidiView.swift in Sources */,
 				528AC1A32768034E00F0270A /* BiggerButton.swift in Sources */,
+				5239ACE5277BDEDB00A6CD66 /* SynthesizerPlayer.swift in Sources */,
 				52135CCE2763E9F800E8D3F9 /* Synthesizer.swift in Sources */,
 				52B3C68A26E6E0E0001A33B1 /* ContentView.swift in Sources */,
 				52B3C68826E6E0E0001A33B1 /* MusicNotepadApp.swift in Sources */,
 				523D682D2741BB4D00E6FEEE /* AVMutableCompositionTrack+Extension.swift in Sources */,
 				528AC1A12767CE8000F0270A /* PhaseDisortedSynth.swift in Sources */,
+				523415C32772B5CE002D6D00 /* MidiNoteData+Extension.swift in Sources */,
 				52B9119127512EC800905B6B /* UINavigationBar+Extension.swift in Sources */,
 				528BD0FE2753B0070038F231 /* MidiConverter.swift in Sources */,
 				52135CD127640A5F00E8D3F9 /* PWMSynthesizer.swift in Sources */,
@@ -474,7 +479,6 @@
 				528AC1A52768035D00F0270A /* DarkButtonDynamic.swift in Sources */,
 				52271E7F2724036F0012EF96 /* Date+Extension.swift in Sources */,
 				528AC19F2767CA8400F0270A /* WaveMorphedSynthesizer.swift in Sources */,
-				521987E5275CEEFB0007542C /* MidiRecorder.swift in Sources */,
 				52271E7D272402D00012EF96 /* TrackType.swift in Sources */,
 				526CD0412727602C006A1772 /* ApplicationState.swift in Sources */,
 				528AC1AB276816E600F0270A /* ProgressBar.swift in Sources */,
@@ -567,7 +571,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -622,7 +626,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -643,7 +647,7 @@
 				DEVELOPMENT_TEAM = 2Z6JF4HPFL;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MusicNotepad/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -666,7 +670,7 @@
 				DEVELOPMENT_TEAM = 2Z6JF4HPFL;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = MusicNotepad/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -686,7 +690,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2Z6JF4HPFL;
 				INFOPLIST_FILE = MusicNotepadTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -708,7 +712,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2Z6JF4HPFL;
 				INFOPLIST_FILE = MusicNotepadTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

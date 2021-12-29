@@ -89,7 +89,7 @@ class MidiConverter {
         }
         
         for note in midiNotesCompleted {
-            print("Note comp : \(note.noteNumber)  length: \(note.duration)")
+            print("Note comp : \(note.noteNumber) position: \(note.position.beats) length: \(note.duration)")
         }
   
     }

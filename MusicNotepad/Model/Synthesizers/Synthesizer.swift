@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SoundpipeAudioKit
 import AudioKit
 import AudioToolbox
 import AudioKitUI
