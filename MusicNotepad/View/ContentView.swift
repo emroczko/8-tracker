@@ -542,7 +542,7 @@ struct KeyboardManager: View {
             .frame(height: 60)
             .background(Color.black.opacity(0.7))
 
-            KeyboardWidget(delegate: player, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
+            KeyboardWidget(delegate: player.synthesizerPlayer, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
             
         }
         .cornerRadius(30)

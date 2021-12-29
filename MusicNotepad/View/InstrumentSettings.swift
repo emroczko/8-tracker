@@ -27,10 +27,10 @@ struct InstrumentSettings: View {
             .pickerStyle(.wheel)
             .onChange(of: selectedSynth, perform: { newSynthesizer in
                 print("new value: \(newSynthesizer.rawValue)")
-                player.changeSynthesizer(trackNumber: trackNumber, newSynthesizer: newSynthesizer)
+                player.synthesizerPlayer.changeSynthesizer(trackNumber: trackNumber, newSynthesizer: newSynthesizer)
             })
             
-            CustomSlider(value: $player.synthesizers[trackNumber - 1].amplitude, label: "Volume", range: 0 ... 1)
+            CustomSlider(value: $player.synthesizerPlayer.synthesizers[trackNumber - 1].amplitude, label: "Volume", range: 0 ... 1)
                 .frame(height: 15)
                 .padding(.trailing)
                 .padding(.leading)
@@ -38,15 +38,15 @@ struct InstrumentSettings: View {
             
             switch(selectedSynth){
             case .PWMSynth:
-                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "PWM", range: 0.1 ... 0.99)
+                CustomSlider(value: $player.synthesizerPlayer.synthesizers[trackNumber - 1].uniqueModification, label: "PWM", range: 0.1 ... 0.99)
                     .frame(height: 15)
                     .padding()
             case .WaveformMorphedSynth:
-                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "Morph", range: 0 ... 3)
+                CustomSlider(value: $player.synthesizerPlayer.synthesizers[trackNumber - 1].uniqueModification, label: "Morph", range: 0 ... 3)
                     .frame(height: 15)
                     .padding()
             case.PhaseDisortedSynth:
-                CustomSlider(value: $player.synthesizers[trackNumber - 1].uniqueModification, label: "Phase", range: -1 ... 1)
+                CustomSlider(value: $player.synthesizerPlayer.synthesizers[trackNumber - 1].uniqueModification, label: "Phase", range: -1 ... 1)
                     .frame(height: 15)
                     .padding()
             }
