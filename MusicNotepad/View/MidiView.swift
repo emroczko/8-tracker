@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AudioKit
 
 struct MidiView: View {
     var numberOfBeats : Int
@@ -74,22 +75,47 @@ struct MidiNotesView: View {
     
     var body: some View {
         
+//        Rectangle()
+//            .frame(width: 45, height: 38)
+//            .cornerRadius(2)
+//            .foregroundColor(Color.green)
+//            .position(x: 140, y: 38 + 45)
+//            .zIndex(100)
+        
+        ForEach(manager.tracksData[trackNumber - 1].midiNotes, id: \.self) { note in
+            
+            SingleMidiNoteView(note: note, trackNumber: trackNumber)
+        }
+    }
+    
+    
+}
+
+struct SingleMidiNoteView : View {
+    var note : MIDINoteData
+    var trackNumber: Int
+    @EnvironmentObject var manager : AudioManager
+    @State var noteLength : Int = 2
+    
+    var body : some View {
         Rectangle()
-            .frame(width: 45, height: 38)
+            .contextMenu(menuItems: {
+                Button("Delete", action: {
+                    manager.tracksData[trackNumber - 1].midiNotes.remove(at: manager.tracksData[trackNumber - 1].midiNotes.firstIndex(of: note)!)
+                })
+                Button("Longer", action: {
+                    
+                })
+                Button("Shorter", action: {
+                    
+                })
+                
+            })
+            .frame(width: note.duration.beats * 45, height: 38)
             .cornerRadius(2)
             .foregroundColor(Color.green)
-            .position(x: 140, y: 38 + 45)
+            .position(x: note.position.beats * 45 + 140, y: CGFloat(108 &- note.noteNumber) * 38 + 45)
             .zIndex(100)
-        
-//        ForEach(manager.tracksData[trackNumber - 1].midiNotes, id: \.self) { note in
-//            Rectangle()
-//                .frame(width: note.duration.beats * 45, height: 38)
-//                .cornerRadius(2)
-//                .foregroundColor(Color.green)
-//                .position(x: note.position.beats * 45 + 140, y: CGFloat(108 - note.noteNumber) * 38 + 45)
-//                .zIndex(100)
-//                
-//        }
     }
 }
 

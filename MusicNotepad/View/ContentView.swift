@@ -155,7 +155,7 @@ struct ConsoleView: View {
         }
         .padding()
         .frame(height: viewHeight)
-        .background(applicationState.isPlaying || applicationState.isRecording ? player.data.color : backgroundColor)
+        .background(applicationState.isPlaying || applicationState.isRecording ? player.data.metronomeColor : backgroundColor)
         //.receive(on: $player.data.color)
         .cornerRadius(30)
         .disabled(applicationState.isRecording)
@@ -206,7 +206,6 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
-    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
     @EnvironmentObject var player: AudioManager
     @State var isInstrumentSettingsExpanded: Bool = false
     
@@ -232,7 +231,7 @@ struct ExpandedTrackView: View {
                     }
                     .disabled(applicationState.isPlaying)
                     Group{
-                        if(!player.data.tracksMuted[trackNumber]!){
+                        if(!player.tracksData[trackNumber - 1].isMuted){
                             RoundButton(imageName: "speaker.fill", function: muteTrack, color: .white)
                         }
                         else{
@@ -352,7 +351,7 @@ struct ExpandedTrackView: View {
     }
     
     func muteTrack(){
-        player.data.tracksMuted[trackNumber]?.toggle()
+        player.tracksData[trackNumber - 1].isMuted.toggle()
     }
     
     func record() {
@@ -360,6 +359,7 @@ struct ExpandedTrackView: View {
         player.data.isRecording = true
         player.data.isPlaying = true
         applicationState.isRecording = true
+        player.synthesizerManager.isRecording = true
     }
     
     func stopRecording() {
@@ -497,7 +497,7 @@ struct MidiControlsButtons: View {
     }
     
     func convertToMidi(){
-        let notes = midiConverter.convertBufferToFloats(trackNumber: trackNumber)
+        let notes = midiConverter.convertAudioToMidi(trackNumber: trackNumber, tempo: player.data.tempo)
         guard notes.count > 0 else {
             return
         }
@@ -542,7 +542,7 @@ struct KeyboardManager: View {
             .frame(height: 60)
             .background(Color.black.opacity(0.7))
 
-            KeyboardWidget(delegate: player.synthesizerPlayer, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
+            KeyboardWidget(delegate: player.synthesizerManager, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
             
         }
         .cornerRadius(30)

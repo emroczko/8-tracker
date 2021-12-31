@@ -14,11 +14,8 @@ import CoreAudio
 import SoundpipeAudioKit
 import AudioKit
 
-class CustomAudioRecorder: ObservableObject {
+class AudioRecorderManager {
     
-    @Published var isRecording : Bool = false
-    var appLength: Int = 32
-    var currentTrackNumber: Int = 0
     var audioRecorder : AVAudioRecorder = AVAudioRecorder()
     
     func startRecording(trackNumber: Int){
@@ -27,7 +24,6 @@ class CustomAudioRecorder: ObservableObject {
             FilesManager.deleteRecording(trackNumber: trackNumber)
         }
         
-        currentTrackNumber = trackNumber
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -51,7 +47,6 @@ class CustomAudioRecorder: ObservableObject {
         do {
             audioRecorder = try AVAudioRecorder(url: fileName, settings: settings)
             audioRecorder.prepareToRecord()
-            isRecording = true
             audioRecorder.record()
         } catch {
             print("Failed to Setup the Recording")
@@ -62,7 +57,6 @@ class CustomAudioRecorder: ObservableObject {
     func stopRecording(){
         print("stop")
         audioRecorder.stop()
-        isRecording = false
     }
     
 }

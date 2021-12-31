@@ -17,7 +17,7 @@ protocol SynthManagerDelegate: AnyObject {
 }
 
 
-class SynthManager : KeyboardDelegate {
+class SynthesizerManager : KeyboardDelegate {
     
     weak var delegate: SynthManagerDelegate?
     

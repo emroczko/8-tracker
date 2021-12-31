@@ -77,9 +77,7 @@ class PWMSynthesizer : Synthesizer, Node {
         return -1
     }
     
-    
     func play(frequency: AUValue) {
-        print("playing")
         let freeVoiceNumber = findFreeVoice()
         if(freeVoiceNumber == -1){
             return
@@ -92,7 +90,6 @@ class PWMSynthesizer : Synthesizer, Node {
         for i in 0 ... oscillators.count - 1 {
             if (oscillators[i].frequency == frequency && oscillators[i].isStarted) {
                 oscillators[i].stop()
-                
             }
         }
     }
