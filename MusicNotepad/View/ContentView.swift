@@ -14,12 +14,10 @@ import AudioKitUI
 let numberOfSamples: Int = 32
 
 
-
 struct ContentView: View {
     
     @StateObject var applicationState = ApplicationState.shared
     @StateObject var player = AudioManager()
-    
     @State var trackFocus : [Int : Bool] = [1 : false,
                                             2 : false,
                                             3 : false,
@@ -43,7 +41,6 @@ struct ContentView: View {
                         MidiView(numberOfBeats: player.data.sequenceLength, trackNumber: player.data.currentTrack)
                     }
                 }
-
                 else{
                     ScrollView{
                         VStack{
@@ -191,12 +188,10 @@ struct TrackView: View {
                 ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
             }
         }
-        //.animation(.linear(duration: 0.3))
         .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
         .background(Color.black.opacity(0.75))
         .cornerRadius(30)
     }
-    
 }
 
 struct ExpandedTrackView: View {
@@ -407,6 +402,8 @@ struct CondensedTrackView: View {
                     .frame(width: UIScreen.screenWidth/10*4.25, height:
                             UIScreen.screenHeight/12, alignment: .center)
                     .foregroundColor(.blue)
+                
+
                 
             }
             Button(action: {

@@ -12,10 +12,7 @@ import AudioKitEX
 import SoundpipeAudioKit
 
 
-class PhaseDisortedSynthesizer : Synthesizer, Node {
-    
-    var connections: [Node] { [] }
-    var avAudioNode = instantiate(generator: "pdho")
+class PhaseDisortedSynthesizer : Synthesizer {
     
     var amplitude: AUValue = 0.8 {
         didSet {
@@ -40,7 +37,6 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
     var activeVoices: [Bool] = []
     
     init(){
-        setupParameters()
         changeUniqueModification(value: uniqueModification)
         fillSynthesizerWithOscillators()
         initOscillators()

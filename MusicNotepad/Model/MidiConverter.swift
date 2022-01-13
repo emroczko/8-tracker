@@ -9,7 +9,6 @@ import Foundation
 import AVKit
 import CSoundpipeAudioKit
 import AudioKit
-import Accelerate
 
 struct SoundInfo{
     var pitch: Int
@@ -164,13 +163,13 @@ class MidiConverter {
                 noteLength += Duration(samples: sampleLength, sampleRate: 48000, tempo: BPM(tempo))
             }
             else{
-                midiNotesCompleted.append(MIDINoteData(noteNumber: MIDINoteNumber(midiNotes[i-1].noteNumber), velocity: MIDIVelocity(midiNotes[i-1].velocity), channel: 0, duration: noteLength, position: noteStartingPosition))
+                midiNotesCompleted.append(MIDINoteData(noteNumber: MIDINoteNumber(midiNotes[i-1].noteNumber), velocity: 127, channel: 0, duration: noteLength, position: noteStartingPosition))
                 noteStartingPosition = midiNotes[i].position
                 noteLength = Duration(samples: sampleLength, sampleRate: 48000, tempo: BPM(tempo))
             }
             
             if (i == midiNotes.count - 1 ){
-                midiNotesCompleted.append(MIDINoteData(noteNumber: MIDINoteNumber(midiNotes[i].noteNumber), velocity: MIDIVelocity(midiNotes[i].velocity), channel: 0, duration: noteLength, position: noteStartingPosition))
+                midiNotesCompleted.append(MIDINoteData(noteNumber: MIDINoteNumber(midiNotes[i].noteNumber), velocity: 127, channel: 0, duration: noteLength, position: noteStartingPosition))
             }
         }
         

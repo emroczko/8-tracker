@@ -8,7 +8,6 @@
 import Foundation
 import AudioKit
 import AudioKitEX
-import STKAudioKit
 import AVKit
 import SwiftUI
 import AudioKitUI
@@ -17,7 +16,7 @@ import SoundpipeAudioKit
 struct SequencerData {
     var isPlaying = false
     var tempo: BPM = 120
-    var sequenceLength: Int = 32
+    var sequenceLength: Int = 33
     var beatNoteVelocity = 100.0
     var currentBeat: Float = 0
     var metronomeColor: Color = Color.black.opacity(0.75)
@@ -37,7 +36,7 @@ struct TrackData {
     var isAudioRecorded : Bool = false
     var isMidiRecorded: Bool = false
     var trackType : TrackType = .NONE
-    var audioVolume : AUValue = 75
+    var audioVolume : AUValue = 40
     var midiNotes: [MIDINoteData] = []
 }
 
@@ -45,21 +44,18 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
 
     let tracksCount : Int = 8
     let engine = AudioEngine()
-    let shaker = Shaker()
-    let rhodes = RhodesPianoKey()
-    var callbackVisualMetronome = CallbackInstrument()
-    var callbackAudioTracks = CallbackInstrument()
-    var callbackAudioRecording = CallbackInstrument()
-    var callbackMidiRecording = CallbackInstrument()
-    let reverb: Reverb
+    var callbackVisualMetronome = MIDICallbackInstrument()
+    var callbackAudioTracks = MIDICallbackInstrument()
+    var callbackAudioRecording = MIDICallbackInstrument()
+    var callbackMidiRecording = MIDICallbackInstrument()
     let mixer = Mixer()
-    var sequencer = Sequencer()
+    let metronomeMixer = Mixer()
+    var sequencer = AppleSequencer()
     var players = [URL:AudioPlayer]()
     var audioRecorder: AudioRecorderManager = AudioRecorderManager()
     var applicationState = ApplicationState.shared
     var sequencerPosition: Float = 0.0
-    var callbackSynth = CallbackInstrument()
-    var callbackSynths: [CallbackInstrument] = []
+    var callbackSynths: [MIDICallbackInstrument] = []
     var isMIDI: Bool = false
 
     @Published var synthesizerManager: SynthesizerManager = SynthesizerManager()
@@ -67,86 +63,75 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
     @Published var data = SequencerData() {
         didSet {
             updateSequences()
-            data.isPlaying ? sequencer.play() : sequencer.stop()
+            data.isPlaying ? startSequencer() : sequencer.stop()
             if(data.isRecording){
-                sequencer.loopEnabled = false
+                sequencer.disableLooping()
             }
             else{
-                sequencer.loopEnabled = data.isLooped
+                sequencer.enableLooping()
             }
-            sequencer.tempo = data.tempo
-            synthesizerManager.currentTrack = data.trackToRecord
+            sequencer.setTempo(data.tempo)
+            synthesizerManager.currentTrack = data.currentTrack
         }
     }
 
     func updateSequences() {
+        
         let length = data.isCountIn && data.isRecording ? data.sequenceLength + 4 : data.sequenceLength
         var track = sequencer.tracks.first!
 
-        track.length = Double(length)
         track.clear()
+        track.setLength(Duration(beats: Double(length), tempo: data.tempo))
+
         let vel = MIDIVelocity(Int(data.beatNoteVelocity))
         if(data.isMetronomePlaying){
-            for beat in 0 ..< length {
-                if((beat + 1) % 4 == 1){
-                    track.sequence.add(noteNumber: MIDINoteNumber(6), position: Double(beat), duration: 0.4)
-                }
-                else{
-                    track.sequence.add(noteNumber: MIDINoteNumber(10), velocity: vel, position: Double(beat), duration: 0.1)
-                }
+            for beat in 1 ..< length {
+                track.add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber((beat ) % 4 == 1 ? 67 : 60), velocity: 127, channel: 1, duration: Duration(beats: 0.4, tempo: data.tempo), position: Duration(beats: Double(beat), tempo: data.tempo)))
             }
         }
         else{
             if(data.isCountIn && data.isRecording){
-                track.sequence.add(noteNumber: MIDINoteNumber(6), position: Double(0), duration: 0.4)
-                track.sequence.add(noteNumber: MIDINoteNumber(10), position: Double(1), duration: 0.1)
-                track.sequence.add(noteNumber: MIDINoteNumber(10), position: Double(2), duration: 0.1)
-                track.sequence.add(noteNumber: MIDINoteNumber(10), position: Double(3), duration: 0.1)
+                for i in 1 ... 4 {
+                    track.add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber(i == 0 ? 6 : 10), velocity: 127, channel: 1, duration: Duration(beats: 0.4, tempo: data.tempo), position: Duration(beats: Double(i), tempo: data.tempo)))
+                }
             }
         }
         
+        sequencer.tracks[0].add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber(60), velocity: vel, channel: 1, duration: Duration(beats: 1, tempo: data.tempo), position: Duration(beats: Double(2), tempo: data.tempo)))
+
+
         track = sequencer.tracks[1]
-        track.length = Double(length)
         track.clear()
-        
-        for beat in 0 ..< length{
-            track.sequence.add(noteNumber: MIDINoteNumber(beat), position: Double(beat), duration: 0.1)
+        track.setLength(Duration(beats: Double(length), tempo: data.tempo))
+        for beat in 1 ..< length{
+            track.add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber(beat), velocity: vel, channel: 1, duration: Duration(beats: 0.4, tempo: data.tempo), position: Duration(beats: Double(beat), tempo: data.tempo)))
         }
-        
-        var position = data.isCountIn && data.isRecording ? Double(4) : Double(0)
-        
-        track = sequencer.tracks[2]
-        track.length = Double(length)
-        track.clear()
-        track.sequence.add(noteNumber: MIDINoteNumber(0), position: position, duration: 20)
-        
-        track = sequencer.tracks[3]
-        track.length = Double(length)
-        track.clear()
-        track.sequence.add(noteNumber: MIDINoteNumber(0), position: position, duration: 20)
-        
-        track = sequencer.tracks[4]
-        track.length = Double(length)
-        track.clear()
-        track.sequence.add(noteNumber: MIDINoteNumber(0), position: position, duration: 20)
-        
-        
-        
+
+        let position = data.isCountIn && data.isRecording ? Double(5) : Double(1)
+
+        for i in 2 ... 4 {
+            track = sequencer.tracks[i]
+            track.clear()
+            track.setLength(Duration(beats: Double(length), tempo: data.tempo))
+            track.add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber(0), velocity: vel, channel: 1, duration: Duration(beats: 32, tempo: data.tempo), position: Duration(beats: position, tempo: data.tempo)))
+        }
+
         for i in 1...tracksCount {
             if((tracksData[i - 1].isMidiEnabled == true || tracksData[i - 1].isMidiRecorded == true) && i != data.trackToRecord){
                 track = sequencer.tracks[i + 4]
-                track.length = Double(length)
                 track.clear()
+                track.setLength(Duration(beats: Double(length), tempo: data.tempo))
 
                 for note in tracksData[i - 1].midiNotes {
-                    let position = data.isCountIn && data.isRecording ? Double(note.position.beats + 4) : Double(note.position.beats)
-                    track.sequence.add(noteNumber: note.noteNumber, position: position, duration: Double(note.duration.beats))
+                    let position = data.isCountIn && data.isRecording ? Double(note.position.beats + 5) : Double(note.position.beats + 1)
+                    var tempNote = note
+                    
+                    tempNote.position = Duration(beats: position, tempo: data.tempo)
+                    track.add(midiNoteData: tempNote)
+                    //track.add(midiNoteData: MIDINoteData(noteNumber: note.noteNumber, velocity: note.velocity, channel: 1, duration: note.duration, position: Duration(beats: position,  tempo: data.tempo)))
+                    track.add(midiNoteData: MIDINoteData(noteNumber: MIDINoteNumber(note.noteNumber), velocity: 127, channel: 1, duration: note.duration, position: Duration(beats: position, tempo: data.tempo)))
                 }
 
-                if(tracksData[i - 1].midiNotes.count > 0){
-                    position = data.isCountIn && data.isRecording ? Double((tracksData[i - 1].midiNotes.last?.position.beats)! + 4)  : Double((tracksData[i - 1].midiNotes.last?.position.beats)!)
-                    track.sequence.add(noteNumber: 127, position: position, duration: Double((tracksData[i - 1].midiNotes.last?.duration.beats)!))
-                }
             }
 
         }
@@ -164,33 +149,43 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
     init() {
     
         try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord)
-        
         try! AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-        
-        let _ = sequencer.addTrack(for: shaker)
-        
         AVAudioSession.sharedInstance().requestRecordPermission{_ in }
-
-        let fader = Fader(shaker)
-        fader.gain = 30.0
-
-        //        let delay = Delay(fader)
-        //        delay.time = AUValue(1.5 / playRate)
-        //        delay.dryWetMix = 0.7
-        //        delay.feedback = 0.2
-        reverb = Reverb(fader)
+    
+        let metronomeTrack = sequencer.newTrack()
+        
+        let sampler = MIDISampler()
+        let metronomeSoundUrl = Bundle.main.url(forResource: "regularMetronome", withExtension: "wav")
+        
+        try! sampler.loadAudioFile(AVAudioFile(forReading: metronomeSoundUrl!))
+        metronomeTrack?.setMIDIOutput(sampler.midiIn)
+        
+        let metronome = Fader(sampler)
+        metronome.gain = 60
     
         for _ in 1 ... tracksCount {
             tracksData.append(TrackData())
         }
         
-        checkIfAudioExists()
+        
 
-        callbackVisualMetronome = CallbackInstrument(midiCallback: { (status, beat, _) in
-            
-            print("callback visual")
-            let midiStatus = MIDIStatus(byte: status)
+        callbackVisualMetronome = MIDICallbackInstrument{ [self]
+                                                         status, beat, _ in
+            guard let midiStatus = MIDIStatusType.from(byte: status) else {
+                return
+            }
             let length = self.data.isCountIn && self.data.isRecording ? self.data.sequenceLength + 3 : self.data.sequenceLength - 1
+
+            if (self.data.isLooped == false && beat == length && midiStatus == .noteOff) {
+                print("koniec")
+                self.stopRecording()
+                self.data.isPlaying = false
+                self.applicationState.isPlaying = false
+                self.applicationState.isRecording = false
+                self.stopTracks()
+                self.sequencer.rewind()
+            }
+
             DispatchQueue.main.async {
                 if(length > self.data.sequenceLength){
                     if(beat < 4){
@@ -202,22 +197,11 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
                 else{
                     self.data.currentBeat = Float(beat) + 1
                 }
-            
-            
-            if (self.data.isLooped == false && beat == length && midiStatus?.type == .noteOff) {
-                print("koniec")
-                self.stopRecording()
-                self.data.isPlaying = false
-                self.applicationState.isPlaying = false
-                self.applicationState.isRecording = false
-                self.stopTracks()
-                self.sequencer.rewind()
-            }
-            
-            if (midiStatus?.type != .noteOn){ return }
-            
+            if(midiStatus != .noteOn){ return }
+                
+
             print(beat)
-            
+
                 if((beat + 1) % 4 == 1){
                     self.data.metronomeColor = Color.blue.opacity(0.75)
                 }
@@ -228,93 +212,115 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
                     self.data.metronomeColor = Color.black.opacity(0.75)
                 }
             }
-        })
+        }
+    
         
-        callbackAudioTracks = CallbackInstrument(midiCallback: { (status, beat, _) in
-            if let midiStatus = MIDIStatus(byte: status), midiStatus.type != .noteOn { return }
-        
+        let visualMetronomeTrack = sequencer.newTrack()
+        visualMetronomeTrack?.setMIDIOutput(callbackVisualMetronome.midiIn)
+
+        callbackAudioTracks = MIDICallbackInstrument{ [self]
+            status, beat, _ in
+            guard let midiStatus = MIDIStatusType.from(byte: status) else {
+                return
+            }
+            if(midiStatus != .noteOn){ return }
+            
             DispatchQueue.main.async {
-                print("play tracks")
                 self.playTracks()
             }
-        })
-        
-        callbackAudioRecording = CallbackInstrument(midiCallback: { (status, beat, _) in
-            if let midiStatus = MIDIStatus(byte: status), midiStatus.type != .noteOn { return }
+        }
+
+        callbackAudioRecording = MIDICallbackInstrument{ [self]
+            status, beat, _ in
+            guard let midiStatus = MIDIStatusType.from(byte: status) else {
+                return
+            }
+            
+            if(midiStatus != .noteOn){ return }
             
             if(self.data.isRecording && self.tracksData[self.data.trackToRecord - 1].trackType == .AUDIO){
                 DispatchQueue.main.async {
                     self.record()
                 }
             }
-        })
-        
-        callbackMidiRecording = CallbackInstrument(midiCallback: { (status, beat, _) in
+        }
+
+        callbackMidiRecording = MIDICallbackInstrument{ [self]
+            status, beat, _ in
             print("callback rec: \(beat)")
-            if let midiStatus = MIDIStatus(byte: status), midiStatus.type != .noteOn { return }
+            guard let midiStatus = MIDIStatusType.from(byte: status) else {
+                return
+            }
+            if(midiStatus != .noteOn){ return }
+            
             
             let trackToRecord = self.data.trackToRecord - 1
-            
+
             if(self.data.isRecording && self.tracksData[trackToRecord].trackType == .MIDI){
                 self.synthesizerManager.setRecordingOptions(tempo: self.data.tempo, isRecording: true,
                                                            trackToRecord: trackToRecord, isCountIn: self.data.isCountIn)
                 self.tracksData[trackToRecord].isMidiRecorded = true
             }
-        })
-
-        let _ = sequencer.addTrack(for: callbackVisualMetronome)
-        let _ = sequencer.addTrack(for: callbackAudioTracks)
-        let _ = sequencer.addTrack(for: callbackAudioRecording)
-        let _ = sequencer.addTrack(for: callbackMidiRecording)
-        
-        for i in 0...7 {
-            
-            callbackSynths.append(CallbackInstrument(midiCallback: { status, noteNumber, velocity in
-                let midiStatus = MIDIStatus(byte: status)
-                print("playing callback \(i+1)")
-                
-                if(noteNumber == 127){
-                    self.isMIDI = false
-                    //self.synth.stop()
-                    self.synthesizerManager.synthesizers[i].stop()
-                    return
-                }
-                
-                if(midiStatus?.type == .noteOn){
-                    print("playing \(noteNumber.midiNoteToFrequency())")
-                    //self.synth.play(frequency: noteNumber.midiNoteToFrequency())
-                    //self.synth.frequency = noteNumber.midiNoteToFrequency()
-                    self.synthesizerManager.synthesizers[i].play(frequency: noteNumber.midiNoteToFrequency())
-                }
-                else{
-                    print("stoppin \(noteNumber.midiNoteToFrequency())")
-                    self.synthesizerManager.synthesizers[i].stop(frequency: noteNumber.midiNoteToFrequency())
-                    
-                }
-            }))
-            
-            let _ = sequencer.addTrack(for: callbackSynths[i])
         }
+
+        let audioTracks = sequencer.newTrack()
+        audioTracks?.setMIDIOutput(callbackAudioTracks.midiIn)
         
-        sequencer.loopEnabled = data.isLooped
-        updateSequences()
+        let audioRecording = sequencer.newTrack()
+        audioRecording?.setMIDIOutput(callbackAudioRecording.midiIn)
         
-        mixer.addInput(fader)
+        let midiRecording = sequencer.newTrack()
+        midiRecording?.setMIDIOutput(callbackMidiRecording.midiIn)
+
+        mixer.addInput(metronome)
+        mixer.addInput(callbackVisualMetronome)
         mixer.addInput(callbackVisualMetronome)
         mixer.addInput(callbackAudioTracks)
         mixer.addInput(callbackAudioRecording)
         mixer.addInput(callbackMidiRecording)
-        mixer.addInput(callbackSynth)
         
-        for callback in callbackSynths {
-            mixer.addInput(callback)
+        for i in 0...7 {
+
+            callbackSynths.append(MIDICallbackInstrument { [self]
+                status, noteNumber, _ in
+                guard let midiStatus = MIDIStatusType.from(byte: status) else {
+                    return
+                }
+                print("playing callback \(i+1)")
+                print("status: \(midiStatus)")
+
+                if(noteNumber == 127){
+                    self.isMIDI = false
+                    self.synthesizerManager.synthesizers[i].stop()
+                    return
+                }
+
+                if(midiStatus == .noteOn){
+                    self.synthesizerManager.synthesizers[i].play(frequency: noteNumber.midiNoteToFrequency())
+                }
+                else{
+                    self.synthesizerManager.synthesizers[i].stop(frequency: noteNumber.midiNoteToFrequency())
+                }
+            })
+            
+            let synthTrack = sequencer.newTrack()
+            synthTrack?.setMIDIOutput(callbackSynths[i].midiIn)
+
         }
+
+        for callback in callbackSynths {
+             mixer.addInput(callback)
+        }
+        
+        checkIfAudioExists()
+        sequencer.enableLooping()
+        updateSequences()
         
         synthesizerManager.delegate = self
         synthesizerManager.initializeOscillators()
-        
+    
         engine.output = mixer
-
+        
     }
     
     func checkIfAudioExists(){
@@ -335,7 +341,7 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
     }
     
     func getSequencerPosition() -> Double {
-        return sequencer.tracks.first!.currentPosition
+        return sequencer.currentPosition.beats
     }
     
     func appendMidiMessage(note: MIDINoteData) {
@@ -410,6 +416,13 @@ class AudioManager: ObservableObject, SynthManagerDelegate {
             }
         }
         
+    }
+    func startSequencer(){
+        if(!sequencer.isPlaying){
+            sequencer.preroll()
+            sequencer.play()
+            
+        }
     }
     
     func clearTrack(trackNumber: Int){
