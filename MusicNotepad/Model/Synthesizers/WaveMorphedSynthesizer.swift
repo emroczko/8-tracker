@@ -12,10 +12,8 @@ import AudioKitEX
 import SoundpipeAudioKit
 
 
-class WaveMorphedSynthesizer : Synthesizer, Node {
-    
-    var connections: [Node] { [] }
-    var avAudioNode = instantiate(generator: "morf")
+class WaveMorphedSynthesizer : Synthesizer {
+
     
     var amplitude: AUValue = 0.8 {
         didSet {
@@ -40,7 +38,6 @@ class WaveMorphedSynthesizer : Synthesizer, Node {
     var activeVoices: [Bool] = []
     
     init(){
-        setupParameters()
         changeUniqueModification(value: uniqueModification)
         fillSynthesizerWithOscillators()
     }

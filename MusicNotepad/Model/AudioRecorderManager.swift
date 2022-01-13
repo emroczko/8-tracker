@@ -14,26 +14,8 @@ import CoreAudio
 import SoundpipeAudioKit
 import AudioKit
 
-struct PitchInformation {
-    var dataTable: [Int: [Float]] = [1: [],
-                                     2: [],
-                                     3: [],
-                                     4: [],
-                                     5: [],
-                                     6: [],
-                                     7: [],
-                                     8: []]
+class AudioRecorderManager {
     
-    mutating func append(trackNumber: Int, value: Float){
-        dataTable[trackNumber]?.append(value)
-    }
-}
-
-class CustomAudioRecorder: ObservableObject {
-    
-    @Published var isRecording : Bool = false
-    var appLength: Int = 32
-    var currentTrackNumber: Int = 0
     var audioRecorder : AVAudioRecorder = AVAudioRecorder()
     
     func startRecording(trackNumber: Int){
@@ -42,7 +24,6 @@ class CustomAudioRecorder: ObservableObject {
             FilesManager.deleteRecording(trackNumber: trackNumber)
         }
         
-        currentTrackNumber = trackNumber
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -66,7 +47,6 @@ class CustomAudioRecorder: ObservableObject {
         do {
             audioRecorder = try AVAudioRecorder(url: fileName, settings: settings)
             audioRecorder.prepareToRecord()
-            isRecording = true
             audioRecorder.record()
         } catch {
             print("Failed to Setup the Recording")
@@ -77,7 +57,6 @@ class CustomAudioRecorder: ObservableObject {
     func stopRecording(){
         print("stop")
         audioRecorder.stop()
-        isRecording = false
     }
     
 }

@@ -12,10 +12,7 @@ import AudioKitEX
 import SoundpipeAudioKit
 
 
-class PhaseDisortedSynthesizer : Synthesizer, Node {
-    
-    var connections: [Node] { [] }
-    var avAudioNode = instantiate(generator: "pdho")
+class PhaseDisortedSynthesizer : Synthesizer {
     
     var amplitude: AUValue = 0.8 {
         didSet {
@@ -40,7 +37,6 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
     var activeVoices: [Bool] = []
     
     init(){
-        setupParameters()
         changeUniqueModification(value: uniqueModification)
         fillSynthesizerWithOscillators()
         initOscillators()
@@ -99,9 +95,10 @@ class PhaseDisortedSynthesizer : Synthesizer, Node {
     
     func stop(frequency: AUValue) {
         for i in 0 ... oscillators.count - 1 {
-            if (oscillators[i].frequency == frequency && activeVoices[i] == true) {//&& oscillators[i].isStarted) {
+            if (oscillators[i].frequency == frequency && activeVoices[i] == true) {
                 oscillators[i].amplitude = 0
                 activeVoices[i] = false
+
             }
         }
     }

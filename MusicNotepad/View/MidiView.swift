@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import AudioKit
 
-struct MidiNotesView: View {
+struct MidiView: View {
     var numberOfBeats : Int
     @State var scale: CGFloat = 1.0
+    
+    var trackNumber: Int
     
     var body: some View {
         
@@ -46,17 +49,8 @@ struct MidiNotesView: View {
                         Spacer()
                             .frame(width: 20)
                     }
-                    Rectangle()
-                        .frame(width: 120, height: 38)
-                        .cornerRadius(2)
-                        .foregroundColor(Color.green)
-                        .position(x: 200, y: 83)
-                        .zIndex(100)
-                    Rectangle()
-                        .frame(width: 120, height: 38)
-                        .foregroundColor(Color.green)
-                        .position(x: 200, y: 40*38 + 45)
-                        .zIndex(100)
+                    
+                    MidiNotesView(trackNumber: trackNumber)
                 }
                 .frame(width: 1480, height: 4172)
                     
@@ -74,6 +68,57 @@ struct MidiNotesView: View {
         }
     }
 }
+
+struct MidiNotesView: View {
+    @EnvironmentObject var manager : AudioManager
+    var trackNumber: Int
+    
+    var body: some View {
+        
+//        Rectangle()
+//            .frame(width: 45, height: 38)
+//            .cornerRadius(2)
+//            .foregroundColor(Color.green)
+//            .position(x: 140, y: 38 + 45)
+//            .zIndex(100)
+        
+        ForEach(manager.tracksData[trackNumber - 1].midiNotes, id: \.self) { note in
+            
+            SingleMidiNoteView(note: note, trackNumber: trackNumber)
+        }
+    }
+    
+    
+}
+
+struct SingleMidiNoteView : View {
+    var note : MIDINoteData
+    var trackNumber: Int
+    @EnvironmentObject var manager : AudioManager
+    @State var noteLength : Int = 2
+    
+    var body : some View {
+        Rectangle()
+            .contextMenu(menuItems: {
+                Button("Delete", action: {
+                    manager.tracksData[trackNumber - 1].midiNotes.remove(at: manager.tracksData[trackNumber - 1].midiNotes.firstIndex(of: note)!)
+                })
+                Button("Longer", action: {
+                    
+                })
+                Button("Shorter", action: {
+                    
+                })
+                
+            })
+            .frame(width: note.duration.beats * 45, height: 38)
+            .cornerRadius(2)
+            .foregroundColor(Color.green)
+            .position(x: note.position.beats * 45 + 140, y: CGFloat(108 &- note.noteNumber) * 38 + 45)
+            .zIndex(100)
+    }
+}
+
 
 struct HorizontalGridView: View {
     
@@ -219,6 +264,6 @@ struct WhiteKeysView : View {
 
 struct MidiNotesView_Previews: PreviewProvider {
     static var previews: some View {
-        MidiNotesView(numberOfBeats: 32)
+        MidiView(numberOfBeats: 32, trackNumber: 1)
     }
 }

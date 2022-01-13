@@ -12,10 +12,8 @@ import AudioKitEX
 import SoundpipeAudioKit
 
 
-class PWMSynthesizer : Synthesizer, Node {
+class PWMSynthesizer : Synthesizer {
     
-    var connections: [Node] { [] }
-    var avAudioNode = instantiate(generator: "pwmo")
     
     var amplitude: AUValue = 0.8 {
         didSet {
@@ -39,7 +37,6 @@ class PWMSynthesizer : Synthesizer, Node {
     var activeVoices: [Bool] = []
     
     init(){
-        setupParameters()
         changeUniqueModification(value: uniqueModification)
         fillSynthesizerWithOscillators()
     }
@@ -77,9 +74,7 @@ class PWMSynthesizer : Synthesizer, Node {
         return -1
     }
     
-    
     func play(frequency: AUValue) {
-        print("playing")
         let freeVoiceNumber = findFreeVoice()
         if(freeVoiceNumber == -1){
             return
@@ -92,7 +87,6 @@ class PWMSynthesizer : Synthesizer, Node {
         for i in 0 ... oscillators.count - 1 {
             if (oscillators[i].frequency == frequency && oscillators[i].isStarted) {
                 oscillators[i].stop()
-                
             }
         }
     }

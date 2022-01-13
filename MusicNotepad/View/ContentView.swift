@@ -14,12 +14,10 @@ import AudioKitUI
 let numberOfSamples: Int = 32
 
 
-
 struct ContentView: View {
     
     @StateObject var applicationState = ApplicationState.shared
     @StateObject var player = AudioManager()
-    
     @State var trackFocus : [Int : Bool] = [1 : false,
                                             2 : false,
                                             3 : false,
@@ -40,10 +38,9 @@ struct ContentView: View {
                     KeyboardManager()
                     }
                     if($applicationState.isMidiViewVisible.returnValue()){
-                        MidiNotesView(numberOfBeats: player.data.sequenceLength)
+                        MidiView(numberOfBeats: player.data.sequenceLength, trackNumber: player.data.currentTrack)
                     }
                 }
-
                 else{
                     ScrollView{
                         VStack{
@@ -155,7 +152,8 @@ struct ConsoleView: View {
         }
         .padding()
         .frame(height: viewHeight)
-        .background(applicationState.isPlaying || applicationState.isRecording ? player.data.color : backgroundColor)
+        .background(applicationState.isPlaying || applicationState.isRecording ? player.data.metronomeColor : backgroundColor)
+        //.receive(on: $player.data.color)
         .cornerRadius(30)
         .disabled(applicationState.isRecording)
         
@@ -190,12 +188,10 @@ struct TrackView: View {
                 ExpandedTrackView(title: title, trackNumber: trackNumber, trackFocus: $trackFocus, viewHeight: $viewHeight)
             }
         }
-        //.animation(.linear(duration: 0.3))
         .frame(height: trackFocus[trackNumber] == true ? 0.5*UIScreen.screenHeight : 120)
         .background(Color.black.opacity(0.75))
         .cornerRadius(30)
     }
-    
 }
 
 struct ExpandedTrackView: View {
@@ -205,7 +201,6 @@ struct ExpandedTrackView: View {
     @Binding var trackFocus : [Int : Bool]
     @Binding var viewHeight: CGFloat
     @State var progressValue: Float = 0.0
-    @ObservedObject var audioRecorder: CustomAudioRecorder = CustomAudioRecorder()
     @EnvironmentObject var player: AudioManager
     @State var isInstrumentSettingsExpanded: Bool = false
     
@@ -231,7 +226,7 @@ struct ExpandedTrackView: View {
                     }
                     .disabled(applicationState.isPlaying)
                     Group{
-                        if(!player.data.tracksMuted[trackNumber]!){
+                        if(!player.tracksData[trackNumber - 1].isMuted){
                             RoundButton(imageName: "speaker.fill", function: muteTrack, color: .white)
                         }
                         else{
@@ -292,12 +287,12 @@ struct ExpandedTrackView: View {
                     .padding(.leading)
             }
             if($applicationState.isMidiViewVisible.returnValue() == false){
-                BiggerButton(imageName: "pianokeys.inverse", function: showMidiView, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
+                BiggerButton(imageName: "music.note.list", function: showMidiView, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
                     .padding(.trailing)
                     .padding(.leading)
             }
             else{
-                BiggerButton(imageName: "pianokeys", function: hideMidiView, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+                BiggerButton(imageName: "music.note.list", function: hideMidiView, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
                     .padding(.trailing)
                     .padding(.leading)
             }
@@ -351,7 +346,7 @@ struct ExpandedTrackView: View {
     }
     
     func muteTrack(){
-        player.data.tracksMuted[trackNumber]?.toggle()
+        player.tracksData[trackNumber - 1].isMuted.toggle()
     }
     
     func record() {
@@ -359,6 +354,7 @@ struct ExpandedTrackView: View {
         player.data.isRecording = true
         player.data.isPlaying = true
         applicationState.isRecording = true
+        player.synthesizerManager.isRecording = true
     }
     
     func stopRecording() {
@@ -406,6 +402,8 @@ struct CondensedTrackView: View {
                     .frame(width: UIScreen.screenWidth/10*4.25, height:
                             UIScreen.screenHeight/12, alignment: .center)
                     .foregroundColor(.blue)
+                
+
                 
             }
             Button(action: {
@@ -485,7 +483,7 @@ struct MidiControlsButtons: View {
     }
     
     func enableMidi(){
-        if(player.midiNotes[trackNumber]!.isEmpty){
+        if(player.tracksData[trackNumber - 1].midiNotes.isEmpty){
             convertToMidi()
             print("converting")
         }
@@ -496,7 +494,7 @@ struct MidiControlsButtons: View {
     }
     
     func convertToMidi(){
-        let notes = midiConverter.convertBufferToFloats(trackNumber: trackNumber)
+        let notes = midiConverter.convertAudioToMidi(trackNumber: trackNumber, tempo: player.data.tempo)
         guard notes.count > 0 else {
             return
         }
@@ -541,7 +539,7 @@ struct KeyboardManager: View {
             .frame(height: 60)
             .background(Color.black.opacity(0.7))
 
-        KeyboardWidget(delegate: player, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
+            KeyboardWidget(delegate: player.synthesizerManager, firstOctave: keyboardOctave, octaveCount: octaveCount, polyphonicMode: true)
             
         }
         .cornerRadius(30)
@@ -551,8 +549,6 @@ struct KeyboardManager: View {
 struct RecordingOptions: View {
     
     @EnvironmentObject var player: AudioManager
-    @State var isAudioPressed: Bool = true
-    @State var isMidiPressed: Bool = false
     
     var trackNumber : Int
     
@@ -562,16 +558,16 @@ struct RecordingOptions: View {
                 .foregroundColor(.blue)
             
             HStack{
-                if($isAudioPressed.returnValue()){
-                    BiggerButton(title: "Audio", function: toggleAudio, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+                if($player.tracksData[trackNumber - 1].trackType.returnValue() == .AUDIO){
+                    BiggerButton(title: "Audio", function: {}, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
 
                 }
                 else{
                     BiggerButton(title: "Audio", function: toggleAudio, imageColor: .blue, linearGradient: LinearGradient(colors: [Color.black.opacity(0.5)], startPoint: .trailing, endPoint: .leading))
                 }
                 
-                if($isMidiPressed.returnValue()){
-                    BiggerButton(title: "Midi", function: toggleAudio, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
+                if($player.tracksData[trackNumber - 1].trackType.returnValue() == .MIDI){
+                    BiggerButton(title: "Midi", function: {}, imageColor: .white, linearGradient: LinearGradient(gradient: Gradient(colors: [Color.pink.opacity(0.75), Color.blue.opacity(0.75)]), startPoint: .top, endPoint: .bottom))
 
                 }
                 else{
@@ -583,21 +579,10 @@ struct RecordingOptions: View {
     }
     
     func toggleAudio(){
-        isAudioPressed.toggle()
-        isMidiPressed = !isAudioPressed
+        player.tracksData[trackNumber - 1].trackType = .AUDIO
     }
     
     func toggleMidi(){
-        isMidiPressed.toggle()
-        isAudioPressed = !isMidiPressed
-    }
-    
-    func changeTrackType(){
-        if(isAudioPressed){
-            player.tracksData[trackNumber - 1].trackType = .AUDIO
-        }
-        if(isMidiPressed){
-            player.tracksData[trackNumber - 1].trackType = .MIDI
-        }
+        player.tracksData[trackNumber - 1].trackType = .MIDI
     }
 }

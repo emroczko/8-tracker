@@ -14,8 +14,6 @@ struct FilesManager {
     static func deleteRecording(trackNumber: Int) {
 
         let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        
-        //let path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true)[0] as NSString
         let fileName = path.appendingPathComponent("track\(trackNumber)_bachelor_app.m4a")
         
         do {
@@ -23,8 +21,6 @@ struct FilesManager {
         } catch {
             print("File could not be deleted!")
         }
-        
-        print("file exists: \(checkIfFileExists(trackNumber: trackNumber))")
     }
     
     static func getFileURL(trackNumber: Int) -> URL{
